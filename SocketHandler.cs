@@ -8,14 +8,38 @@ using PureWebSockets;
 
 namespace DNet.Socket
 {
-    public class SocketHandler
+    // Discord Event Handler Delegates
+    public delegate void MessageCreateHandler(DNet.Structures.Message message);
+
+    public class SocketHandle
     {
+        // Discord Events
+        public event EventHandler OnRateLimit;
+        public event EventHandler OnReady;
+        public event EventHandler OnResumed;
+        public event EventHandler OnGuildCreate;
+        public event EventHandler OnGuildDelete;
+        public event EventHandler OnGuildUpdate;
+        public event EventHandler OnGuildUnavailable;
+        public event EventHandler OnGuildAvailable;
+        public event EventHandler OnGuildMemberAdd;
+        public event EventHandler OnGuildMemberRemove;
+        public event EventHandler OnGuildMemberUpdate;
+        public event EventHandler OnGuildMemberAvailable;
+        public event EventHandler OnGuildMemberSpeaking;
+        public event EventHandler OnGuildMembersChunk;
+        public event EventHandler OnGuildIntegrationsUpdate;
+        // ...
+        public event MessageCreateHandler OnMessageCreate;
+        public event EventHandler OnMessageDelete;
+        public event EventHandler OnMessageUpdate;
+
         private readonly Client client;
 
         private Nullable<int> heartbeatLastSequence = null;
         private PureWebSocket socket;
 
-        public SocketHandler(Client client)
+        public SocketHandle(Client client)
         {
             this.client = client;
         }
@@ -43,7 +67,8 @@ namespace DNet.Socket
 
         private void WS_OnMessage(string messageString)
         {
-            Console.WriteLine($"WS Received => {messageString}");
+            // TODO: Debugging
+            // Console.WriteLine($"WS Received => {messageString}");
 
             GatewayMessage message = JsonConvert.DeserializeObject<GatewayMessage>(messageString);
 
@@ -91,6 +116,36 @@ namespace DNet.Socket
                         Console.WriteLine("Sending ...");
 
                         this.Send(OpCode.Identify, dat);
+
+                        break;
+                    }
+
+                case OpCode.Dispatch:
+                    {
+                        switch (message.type) {
+                            case "MESSAGE_CREATE": {
+                                Console.WriteLine("Handling message create ...");
+
+                                var ser = JsonConvert.SerializeObject((string)message.data);
+
+                                Console.WriteLine("SER", ser);
+                                // TODO: Left here
+
+                                var msg = JsonConvert.DeserializeObject<DNet.Structures.Message>(ser);
+
+                                Console.WriteLine("pass");
+
+                                this.OnMessageCreate.Invoke(msg);
+
+                                break;
+                            }
+
+                            default: {
+                                Console.WriteLine($"Unknown dispatch message type: {message.type}");
+
+                                break;
+                            }
+                        }
 
                         break;
                     }

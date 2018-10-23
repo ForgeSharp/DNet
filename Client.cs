@@ -10,20 +10,23 @@ using PureWebSockets;
 
 namespace DNet
 {
+    // Discord Event Handler Delegates
+    public delegate void MessageCreateHandler(dynamic message);
+
     public class ClientManager
     {
+        public readonly SocketHandle socketHandle;
         private readonly Client client;
-        private SocketHandler socketHandler;
 
         public ClientManager(Client client)
         {
             this.client = client;
-            this.socketHandler = new SocketHandler(this.client);
+            this.socketHandle = new SocketHandle(this.client);
         }
 
         public void Connect()
         {
-            this.socketHandler.Connect();
+            this.socketHandle.Connect();
         }
     }
 
@@ -314,6 +317,11 @@ namespace DNet
         public string GetToken()
         {
             return this.token;
+        }
+
+        public SocketHandle GetHandle()
+        {
+            return this.manager.socketHandle;
         }
     }
 }

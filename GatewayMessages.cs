@@ -4,8 +4,11 @@ namespace DNet.Http.Gateway
 {
     public struct GatewayMessage
     {
+        [JsonProperty("t")]
+        public readonly string type;
+        
         [JsonProperty("d")]
-        public readonly dynamic data;
+        public readonly string data;
 
         [JsonProperty("op")]
         public readonly OpCode opCode;
@@ -13,6 +16,9 @@ namespace DNet.Http.Gateway
 
     public class ClientMessage
     {
+        [JsonProperty("t")]
+        public string type {get;set;}
+
         [JsonProperty("d")]
         public dynamic data { get; set; }
 

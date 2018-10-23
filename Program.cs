@@ -1,5 +1,7 @@
 ﻿using System;
+using DNet.Structures;
 using DotNetEnv;
+using Newtonsoft.Json;
 
 namespace DNet
 {
@@ -11,7 +13,14 @@ namespace DNet
         {
             DotNetEnv.Env.Load();
             Console.WriteLine("Starting ...");
-            client.Connect(Environment.GetEnvironmentVariable("TOKEN"));
+            Program.client.Connect(Environment.GetEnvironmentVariable("TOKEN"));
+
+            var handle = Program.client.GetHandle();
+
+            handle.OnMessageCreate += (Message message) => {
+                Console.WriteLine("Received message");
+                Console.WriteLine("Message", message.content);
+            };
 
             while (true) {}
         }
