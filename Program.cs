@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using DNet.Structures;
 using DotNetEnv;
 using Newtonsoft.Json;
@@ -13,16 +14,28 @@ namespace DNet
         {
             DotNetEnv.Env.Load();
             Console.WriteLine("Starting ...");
-            Program.client.Connect(Environment.GetEnvironmentVariable("TOKEN"));
 
+            var startBotTask = Task.Run(Program.StartBot);
+
+            startBotTask.Wait();
+        }
+
+        public static async Task StartBot() {
             var handle = Program.client.GetHandle();
 
-            handle.OnMessageCreate += (Message message) => {
-                Console.WriteLine("Received message");
-                Console.WriteLine("Message", message.content);
-            };
+            handle.OnMessageCreate += Program.OnMessage;
 
-            while (true) {}
+            // TODO: On disconnected, stop task
+
+            await Program.client.Connect(Environment.GetEnvironmentVariable("TOKEN"));
+            await Task.Delay(-1);
+        }
+
+        private static void OnMessage(Message message)
+        {
+            // TODO
+            Console.WriteLine("Received message");
+            Console.WriteLine(message.content);
         }
     }
 }

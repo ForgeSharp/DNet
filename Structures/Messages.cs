@@ -9,7 +9,7 @@ namespace DNet.Structures
 
     public struct MessageMention
     {
-
+        // TODO:
     }
 
     public struct Message
@@ -17,7 +17,7 @@ namespace DNet.Structures
         public MessageType type { get; set; }
         public bool tts { get; set; }
         public bool pinned { get; set; }
-        public int nonce { get; set; }
+        public string nonce { get; set; }
         public MessageMention[] mentions { get; set; }
 
         [JsonProperty("mention_everyone")]

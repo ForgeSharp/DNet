@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Net.WebSockets;
+using System.Threading.Tasks;
 using DNet.ClientMessages;
 using DNet.Http;
 using DNet.Http.Gateway;
@@ -24,9 +25,9 @@ namespace DNet
             this.socketHandle = new SocketHandle(this.client);
         }
 
-        public void Connect()
+        public Task Connect()
         {
-            this.socketHandle.Connect();
+            return this.socketHandle.Connect();
         }
     }
 
@@ -308,10 +309,11 @@ namespace DNet
             this.manager = new ClientManager(this);
         }
 
-        public void Connect(string token)
+        public Task Connect(string token)
         {
             this.token = token;
-            this.manager.Connect();
+
+            return this.manager.Connect();
         }
 
         public string GetToken()

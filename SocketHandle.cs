@@ -1,5 +1,6 @@
 using System;
 using System.Net.WebSockets;
+using System.Threading.Tasks;
 using DNet.ClientMessages;
 using DNet.Http;
 using DNet.Http.Gateway;
@@ -44,10 +45,11 @@ namespace DNet.Socket
             this.client = client;
         }
 
-        public async void Connect()
+        public async Task Connect()
         {
             Console.WriteLine($"Authenticating using token '{this.client.GetToken()}'");
 
+            // TODO: Use response
             var response = await Fetch.GetJsonAsyncAuthorized<GetGatewayBotResponse>(ApiEndpoints.BotGateway(), this.client.GetToken());
             var convertedResponse = JsonConvert.SerializeObject(response);
             var connectionUrl = "wss://gateway.discord.gg/?v=6&encoding=json";
@@ -82,6 +84,7 @@ namespace DNet.Socket
 
                         Console.WriteLine($"WS Acknowledged heartbeat at {helloMessage.heartbeatInterval}ms interval");
 
+                        // TODO: To know when to stop, pass CONNECTED or similar BY REFERENCE
                         Utils.SetInterval(() =>
                         {
                             this.Send(OpCode.Heartbeat, new ClientHeartbeatMessage(1, this.heartbeatLastSequence));
@@ -104,7 +107,7 @@ namespace DNet.Socket
                             new int[] { 0, 1 },
 
                             new ClientPresence(
-                                new ClientPresenceGame("Testing bot", 0),
+                                new ClientPresenceGame("Sometg", 0),
 
                                 "dnd",
 
@@ -122,29 +125,21 @@ namespace DNet.Socket
 
                 case OpCode.Dispatch:
                     {
-                        switch (message.type) {
-                            case "MESSAGE_CREATE": {
-                                Console.WriteLine("Handling message create ...");
+                        switch (message.type)
+                        {
+                            case "MESSAGE_CREATE":
+                                {
+                                    this.OnMessageCreate(JsonConvert.DeserializeObject<DNet.Structures.Message>(JsonConvert.SerializeObject(message.data)));
 
-                                var ser = JsonConvert.SerializeObject((string)message.data);
+                                    break;
+                                }
 
-                                Console.WriteLine("SER", ser);
-                                // TODO: Left here
+                            default:
+                                {
+                                    Console.WriteLine($"Unknown dispatch message type: {message.type}");
 
-                                var msg = JsonConvert.DeserializeObject<DNet.Structures.Message>(ser);
-
-                                Console.WriteLine("pass");
-
-                                this.OnMessageCreate.Invoke(msg);
-
-                                break;
-                            }
-
-                            default: {
-                                Console.WriteLine($"Unknown dispatch message type: {message.type}");
-
-                                break;
-                            }
+                                    break;
+                                }
                         }
 
                         break;
