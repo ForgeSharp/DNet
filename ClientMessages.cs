@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace DS.ClientMessages {
+namespace DNet.ClientMessages {
     public struct ClientHeartbeatMessage {
         [JsonProperty("op")]
         public readonly int opCode;

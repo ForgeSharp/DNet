@@ -1,13 +1,13 @@
 using System;
 using System.ComponentModel;
 using System.Net.WebSockets;
-using DS.ClientMessages;
-using DS.Http;
-using DS.Http.Gateway;
+using DNet.ClientMessages;
+using DNet.Http;
+using DNet.Http.Gateway;
 using Newtonsoft.Json;
 using PureWebSockets;
 
-namespace DS
+namespace DNet
 {
     public class ClientManager
     {

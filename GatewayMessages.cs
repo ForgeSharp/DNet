@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace DS.Http.Gateway
+namespace DNet.Http.Gateway
 {
     public struct GatewayMessage
     {

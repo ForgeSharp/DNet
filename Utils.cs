@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace DS
+namespace DNet
 {
     public static class Utils
     {

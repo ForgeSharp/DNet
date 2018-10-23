@@ -1,7 +1,7 @@
 ﻿using System;
 using DotNetEnv;
 
-namespace DS
+namespace DNet
 {
     public class Program
     {
