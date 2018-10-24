@@ -50,9 +50,9 @@ namespace DNet.Socket
             Console.WriteLine($"Authenticating using token '{this.client.GetToken()}'");
 
             // TODO: Use response
-            var response = await Fetch.GetJsonAsyncAuthorized<GetGatewayBotResponse>(ApiEndpoints.BotGateway(), this.client.GetToken());
+            var response = await Fetch.GetJsonAsyncAuthorized<GetGatewayBotResponse>(API.BotGateway(), this.client.GetToken());
             var convertedResponse = JsonConvert.SerializeObject(response);
-            var connectionUrl = "wss://gateway.discord.gg/?v=6&encoding=json";
+            var connectionUrl = (string)JsonConvert.DeserializeObject<dynamic>(await Fetch.GetAsync(API.Gateway())).url;
 
             this.socket = new PureWebSocket(connectionUrl, new PureWebSocketOptions() { });
 

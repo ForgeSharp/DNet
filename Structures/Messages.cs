@@ -33,6 +33,10 @@ namespace DNet.Structures
         public dynamic[] attachments { get; set; }
 
         // TODO: Resolve to Guild instead
+        [JsonProperty("guild_id")]
         public string guildId { get; set; }
+
+        [JsonProperty("channel_id")]
+        public string channelId { get; set; }
     }
 }

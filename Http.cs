@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -45,7 +47,7 @@ namespace DNet.Http
         {
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("authorization", "Bot " + token);
+                client.DefaultRequestHeaders.Add("authorization", $"Bot {token}");
 
                 return await client.GetStringAsync(url);
             }
@@ -172,11 +174,21 @@ namespace DNet.Http
         }
     }
 
-    public static class ApiEndpoints
+    public static class API
     {
         public static string BotGateway()
         {
             return $"{CdnInfo.api}/gateway/bot";
+        }
+
+        public static string Gateway()
+        {
+            return $"{CdnInfo.api}/gateway";
+        }
+
+        public static string CreateMessage(string channel, string content)
+        {
+            return $"{CdnInfo.api}/channels/{channel}/messages";
         }
     }
 }

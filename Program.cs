@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DNet.Http;
 using DNet.Structures;
 using DotNetEnv;
 using Newtonsoft.Json;
@@ -33,8 +34,12 @@ namespace DNet
 
         private static void OnMessage(Message message)
         {
-            // TODO
-            Console.WriteLine("Received message");
+            Console.WriteLine(message.channelId);
+
+            if (message.content == "hello") {
+                Program.client.CreateMessage(message.channelId, "Hello from C#!");
+            }
+
             Console.WriteLine(message.content);
         }
     }

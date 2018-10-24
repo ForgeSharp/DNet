@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using DNet.ClientMessages;
@@ -17,6 +20,7 @@ namespace DNet
     public class ClientManager
     {
         public readonly SocketHandle socketHandle;
+
         private readonly Client client;
 
         public ClientManager(Client client)
@@ -299,6 +303,7 @@ namespace DNet
     public class Client
     {
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(CdnInfo.cdn);
+        public static readonly HttpClient httpClient = new HttpClient();
 
         private readonly ClientManager manager;
 
@@ -312,6 +317,7 @@ namespace DNet
         public Task Connect(string token)
         {
             this.token = token;
+            Client.httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bot", this.token);
 
             return this.manager.Connect();
         }
@@ -324,6 +330,22 @@ namespace DNet
         public SocketHandle GetHandle()
         {
             return this.manager.socketHandle;
+        }
+
+        public async void CreateMessage(string channel, string content)
+        {
+            var response = await Client.PostAsync(API.CreateMessage(channel, content), new Dictionary<string, string>() {
+                {"content", content}
+            });
+
+            if (response.StatusCode != HttpStatusCode.OK) {
+                Console.WriteLine($"Could not create message: {response.StatusCode}");
+            }
+        }
+
+        public static Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> values)
+        {
+            return Client.httpClient.PostAsync(url, new FormUrlEncodedContent(values));
         }
     }
 }
