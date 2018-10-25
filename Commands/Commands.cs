@@ -16,16 +16,9 @@ namespace DNet.Commands
         protected readonly Message Message;
         protected readonly Message Msg;
 
-        protected GenericCommand(Bot bot, Message message)
-        {
-            this.Bot = bot;
-            this.Message = message;
-            this.Msg = this.Message;
-        }
+        public abstract void Run(Context context);
 
-        public abstract void Run(IContext context);
-
-        public virtual bool MayRun()
+        public virtual bool MayRun(Context context)
         {
             return true;
         }
@@ -38,9 +31,16 @@ namespace DNet.Commands
 
     public abstract class Command : GenericCommand
     {
-        protected Command(Bot bot, Message message) : base(bot, message)
+        //
+    }
+
+    public class CommandName : Attribute
+    {
+        public readonly string Name;
+
+        public CommandName(string name)
         {
-            //
+            this.Name = name;
         }
     }
 }
