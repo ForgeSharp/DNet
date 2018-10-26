@@ -4,3 +4,4 @@ build/
 obj/
 .env
 *.log
+paket-files/
