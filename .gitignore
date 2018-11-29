@@ -6,3 +6,5 @@ obj/
 *.log
 paket-files/
 .vs/
+.paket/
+packages/
