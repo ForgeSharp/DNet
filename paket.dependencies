@@ -1,5 +1,4 @@
-source https://www.nuget.org/api/v2
+source https://api.nuget.org/v3/index.json
 
-// Nuget packages
-nuget Newtonsoft.Json 11.0.2
+nuget Newtonsoft.Json 12.0.1
 nuget PureWebSockets 2.2.0
