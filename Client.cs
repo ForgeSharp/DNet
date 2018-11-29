@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
-using DNet.ClientMessages;
 using DNet.Http;
-using DNet.Http.Gateway;
 using DNet.Socket;
-using Newtonsoft.Json;
-using PureWebSockets;
 
 namespace DNet
 {
