@@ -29,7 +29,7 @@ namespace DNet.Socket
         public event EventHandler OnGuildMembersChunk;
         public event EventHandler OnGuildIntegrationsUpdate;
         // ...
-        public event EventHandler OnMessageCreate;
+        public event EventHandler<Structures.Message> OnMessageCreate;
         public event EventHandler<MessageDeleteEvent> OnMessageDelete;
         public event EventHandler OnMessageUpdate;
         // ...
@@ -54,6 +54,8 @@ namespace DNet.Socket
 
             this.OnGuildCreate += (object sender, Guild guild) =>
             {
+                Console.WriteLine("Guild id is", guild.Id);
+
                 // Update local guild cache
                 this.client.guilds.Add(guild.Id, guild);
             };
@@ -106,7 +108,6 @@ namespace DNet.Socket
             GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
 
             Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
-            Console.WriteLine(messageString);
 
             switch (message.OpCode)
             {
@@ -173,7 +174,7 @@ namespace DNet.Socket
                             case "MESSAGE_CREATE":
                                 {
                                     // Fire event
-                                    this.OnMessageCreate?.Invoke(this, null);
+                                    this.OnMessageCreate?.Invoke(this, this.ConvertMessage<Structures.Message>(message));
 
                                     break;
                                 }
@@ -181,7 +182,7 @@ namespace DNet.Socket
                             case "MESSAGE_DELETE":
                                 {
                                     // Fire event
-                                    this.OnMessageDelete?.Invoke(this, message.Data);
+                                    this.OnMessageDelete?.Invoke(this, this.ConvertMessage<MessageDeleteEvent>(message));
 
                                     break;
                                 }
@@ -190,7 +191,7 @@ namespace DNet.Socket
                             case "GUILD_CREATE":
                                 {
                                     // Fire event
-                                    this.OnGuildCreate?.Invoke(this, message.Data);
+                                    this.OnGuildCreate?.Invoke(this, this.ConvertMessage<Guild>(message));
 
                                     break;
                                 }
@@ -198,7 +199,7 @@ namespace DNet.Socket
                             case "GUILD_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnGuildUpdate?.Invoke(this, message.Data);
+                                    this.OnGuildUpdate?.Invoke(this, this.ConvertMessage<Guild>(message));
 
                                     break;
                                 }
@@ -206,7 +207,7 @@ namespace DNet.Socket
                             case "GUILD_DELETE":
                                 {
                                     // Fire event
-                                    this.OnGuildDelete?.Invoke(this, message.Data);
+                                    this.OnGuildDelete?.Invoke(this, this.ConvertMessage<UnavailableGuild>(message));
 
                                     break;
                                 }
@@ -215,7 +216,7 @@ namespace DNet.Socket
                             case "PRESENCE_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnPresenceUpdate?.Invoke(this, message.Data);
+                                    this.OnPresenceUpdate?.Invoke(this, this.ConvertMessage<PresenceUpdateEvent>(message));
 
                                     break;
                                 }
@@ -240,6 +241,7 @@ namespace DNet.Socket
             }
         }
 
+        // TODO: This is required or will hang up (stop), because it JSON cannot serialize by JsonProperties attributes into dynamic, it has no way of knowing..
         private DataType ConvertMessage<DataType>(GatewayMessage<dynamic> message)
         {
             return JsonConvert.DeserializeObject<DataType>(JsonConvert.SerializeObject(message.Data));
