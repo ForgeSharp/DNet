@@ -1,17 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-<<<<<<< HEAD
-
-    <PropertyGroup>
-        <TargetFramework>netcoreapp2.1</TargetFramework>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Paket" Version="5.181.1" />
-    </ItemGroup>
-
-</Project>
-=======
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
@@ -20,4 +8,3 @@
     <PackageReference Include="PureWebSockets" Version="2.2.0" />
   </ItemGroup>
 </Project>
->>>>>>> master
