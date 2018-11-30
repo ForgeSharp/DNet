@@ -14,6 +14,7 @@ namespace DNet.Socket
     public delegate void MessageCreateHandler(Structures.Message message);
     public delegate void GuildBasicHandler(Guild guild);
     public delegate void GuildDeleteHandler(UnavailableGuild guild);
+    public delegate void PresenceUpdateHandler(PresenceUpdateEvent update);
 
     public class SocketHandle
     {
@@ -37,6 +38,8 @@ namespace DNet.Socket
         public event MessageCreateHandler OnMessageCreate;
         public event EventHandler OnMessageDelete;
         public event EventHandler OnMessageUpdate;
+        // ...
+        public event PresenceUpdateHandler OnPresenceUpdate;
 
         private readonly Client client;
 
@@ -111,6 +114,7 @@ namespace DNet.Socket
                             // TODO: Hard-coded
                             new int[] { 0, 1 },
 
+                            // TODO: Also hard-coded
                             new ClientPresence(
                                 new ClientPresenceGame("Sometg", 0),
 
@@ -141,7 +145,8 @@ namespace DNet.Socket
                             // Guild Events
                             case "GUILD_CREATE":
                                 {
-                                    var message = (GatewayMessage<Guild>)dynamicMessage;
+                                    // TODO
+                                    var message = /*(GatewayMessage<Guild>)*/dynamicMessage;
 
                                     // Update local guild cache
                                     this.client.guilds.Add(message.Data.Id, message.Data);
@@ -154,7 +159,8 @@ namespace DNet.Socket
 
                             case "GUILD_UPDATE":
                                 {
-                                    var message = (GatewayMessage<Guild>)dynamicMessage;
+                                    // TODO
+                                    var message = /*(GatewayMessage<Guild>)*/dynamicMessage;
 
                                     // Update local guild cache
                                     this.client.guilds.Add(message.Data.Id, message.Data);
@@ -167,13 +173,31 @@ namespace DNet.Socket
 
                             case "GUILD_DELETE":
                                 {
-                                    var message = (GatewayMessage<UnavailableGuild>)dynamicMessage;
+                                    // TODO
+                                    var message = /*(GatewayMessage<UnavailableGuild>)*/dynamicMessage;
 
                                     // Update local guild cache
                                     this.client.guilds.Remove(message.Data.Id);
 
                                     // Fire event
                                     this.OnGuildDelete(message.Data);
+
+                                    break;
+                                }
+
+                            // User Events
+                            case "PRESENCE_UPDATE":
+                                {
+                                    // TODO
+                                    var message = /*(GatewayMessage<PresenceUpdate>)*/dynamicMessage;
+
+                                    // Update local guild cache
+
+                                    // TODO: Update user's properties, see (https://discordapp.com/developers/docs/topics/gateway#presence-update)
+                                    //this.client.users.Add(message.Data.User.Id, message.Data.);
+
+                                    // Fire event
+                                    this.OnPresenceUpdate(message.Data);
 
                                     break;
                                 }
