@@ -11,7 +11,7 @@ using PureWebSockets;
 namespace DNet.Socket
 {
     // Discord Event Handler Delegates
-    public delegate void MessageCreateHandler(DNet.Structures.Message message);
+    public delegate void MessageCreateHandler(DNet.Structures.Msg message);
 
     public class SocketHandle
     {
@@ -132,7 +132,7 @@ namespace DNet.Socket
                         {
                             case "MESSAGE_CREATE":
                                 {
-                                    this.OnMessageCreate(JsonConvert.DeserializeObject<DNet.Structures.Message>(JsonConvert.SerializeObject(message.Data)));
+                                    this.OnMessageCreate(JsonConvert.DeserializeObject<DNet.Structures.Msg>(JsonConvert.SerializeObject(message.Data)));
 
                                     break;
                                 }

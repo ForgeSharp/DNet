@@ -208,4 +208,194 @@ namespace DNet.Structures
         [JsonProperty("user")]
         public User User { get; set; }
     }
+
+    public struct AuditLog
+    {
+        [JsonProperty("webhooks")]
+        public Webhook[] Webhooks { get; set; }
+
+        [JsonProperty("users")]
+        public User[] Users { get; set; }
+
+        [JsonProperty("audit_log_entries")]
+        public AuditLogEntry[] Entries { get; set; }
+    }
+
+    public struct Webhook
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("guild_id")]
+        public string GuildId { get; set; }
+
+        [JsonProperty("channel_id")]
+        public string ChannelId { get; set; }
+
+        [JsonProperty("user")]
+        public User? User { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("avatar")]
+        public string Avatar { get; set; }
+
+        [JsonProperty("token")]
+        public string Token { get; set; }
+    }
+
+    public struct AuditLogEntry
+    {
+        [JsonProperty("target_Id")]
+        public string TargetId { get; set; }
+
+        [JsonProperty("changes")]
+        public AuditLogChange[] Changes { get; set; }
+
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty("action_type")]
+        public AuditLogEvent ActionType { get; set; }
+
+        [JsonProperty("options")]
+        public OptionalAuditEntryInfo Options { get; set; }
+
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+    }
+
+    public struct OptionalAuditEntryInfo
+    {
+        [JsonProperty("delete_member_days")]
+        public string DeleteMemberDays { get; set; }
+
+        [JsonProperty("members_removed")]
+        public string MembersRemoved { get; set; }
+
+        [JsonProperty("channel_id")]
+        public string ChannelId { get; set; }
+
+        [JsonProperty("count")]
+        public string Count { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("role_name")]
+        public string RoleName { get; set; }
+    }
+
+    public enum AuditLogEvent : int
+    {
+        GuildUpdate = 1,
+        ChannelCreate = 10,
+        ChannelUpdate,
+        ChannelDelete,
+        ChannelOverwriteCreate,
+        ChannelOverwriteUpdate,
+        ChannelOverwriteDelete,
+        MemberKick = 20,
+        MemberPrune,
+        MemberBanAdd,
+        MemberBanRemove,
+        MemberUpdate,
+        MemberRoleUpdate,
+        RoleCreate = 30,
+        RoleUpdate,
+        RoleDelete,
+        InviteCreate = 40,
+        InviteUpdate,
+        InviteDelete,
+        WebhookCreate = 50,
+        WebhookUpdate,
+        WebhookDelete,
+        EmojiCreate = 60,
+        EmojiUpdate,
+        EmojiDelete,
+        MessageDelete = 72
+    }
+
+    public struct AuditLogChange
+    {
+        [JsonProperty("new_value")]
+        public dynamic NewValue { get; set; }
+
+        [JsonProperty("old_value")]
+        public dynamic OldValue { get; set; }
+
+        [JsonProperty("key")]
+        public string Key { get; set; }
+    }
+
+    // TODO: Missing string enum AuditLogChangeKey
+
+    public struct Invite
+    {
+        [JsonProperty("code")]
+        public string Code { get; set; }
+
+        // TODO: Guild is partial
+        [JsonProperty("guild")]
+        public Guild? Guild { get; set; }
+
+        // TODO: Channel is partial
+        [JsonProperty("channel")]
+        public Channel Channel { get; set; }
+
+        [JsonProperty("approximate_presence_count")]
+        public int ApproximatePresenceCount { get; set; }
+
+        [JsonProperty("approximate_member_count")]
+        public int ApproximateMemberCount { get; set; }
+    }
+
+    public struct InviteMetadata
+    {
+        [JsonProperty("inviter")]
+        public User Inviter { get; set; }
+
+        [JsonProperty("uses")]
+        public int Uses { get; set; }
+
+        [JsonProperty("max_uses")]
+        public int MaxUses { get; set; }
+
+        [JsonProperty("max_age")]
+        public int MaxAge { get; set; }
+
+        [JsonProperty("temporary")]
+        public bool Temporary { get; set; }
+
+        [JsonProperty("created_at")]
+        public string CreatedAt { get; set; }
+
+        [JsonProperty("revoked")]
+        public bool Revoked { get; set; }
+    }
+
+    public struct VoiceRegion
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("vip")]
+        public bool VIP { get; set; }
+
+        [JsonProperty("optimal")]
+        public bool Optimal { get; set; }
+
+        [JsonProperty("deprecated")]
+        public bool Deprecated { get; set; }
+
+        [JsonProperty("custom")]
+        public bool Custom { get; set; }
+    }
 }
