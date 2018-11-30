@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DNet.ClientMessages;
 using DNet.Http;
 using DNet.Http.Gateway;
+using DNet.Structures;
 using Newtonsoft.Json;
 using PureWebSockets;
 
@@ -72,15 +73,17 @@ namespace DNet.Socket
             // TODO: Debugging
             // Console.WriteLine($"WS Received => {messageString}");
 
-            GatewayMessage message = JsonConvert.DeserializeObject<GatewayMessage>(messageString);
+            GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
 
-            Console.WriteLine($"WS Handling message with OPCODE '{message.opCode}'");
+            Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
 
-            switch (message.opCode)
+            Console.WriteLine(messageString);
+
+            switch (message.OpCode)
             {
                 case OpCode.Hello:
                     {
-                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(message.data));
+                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(message.Data));
 
                         Console.WriteLine($"WS Acknowledged heartbeat at {helloMessage.heartbeatInterval}ms interval");
 
@@ -125,18 +128,26 @@ namespace DNet.Socket
 
                 case OpCode.Dispatch:
                     {
-                        switch (message.type)
+                        switch (message.Type)
                         {
                             case "MESSAGE_CREATE":
                                 {
-                                    this.OnMessageCreate(JsonConvert.DeserializeObject<DNet.Structures.Message>(JsonConvert.SerializeObject(message.data)));
+                                    this.OnMessageCreate(JsonConvert.DeserializeObject<DNet.Structures.Message>(JsonConvert.SerializeObject(message.Data)));
+
+                                    break;
+                                }
+
+                            case "GUILD_CREATE":
+                                {
+                                    message = (GatewayMessage<Guild>)message;
+                                    if (this.client.guilds.ContainsKey(message.Data.))
 
                                     break;
                                 }
 
                             default:
                                 {
-                                    Console.WriteLine($"Unknown dispatch message type: {message.type}");
+                                    Console.WriteLine($"Unknown dispatch message type: {message.Type}");
 
                                     break;
                                 }
@@ -147,7 +158,7 @@ namespace DNet.Socket
 
                 default:
                     {
-                        Console.WriteLine($"WS Unable to handle OPCODE '{message.opCode}' (Not implemented)");
+                        Console.WriteLine($"WS Unable to handle OPCODE '{message.OpCode}' (Not implemented)");
 
                         break;
                     }
@@ -159,12 +170,12 @@ namespace DNet.Socket
             Console.WriteLine($"WS Socket closed => {reason.ToString()}");
         }
 
-        private void Send(OpCode opCode, dynamic data)
+        private void Send<DataType>(OpCode opCode, DataType data)
         {
-            var message = new ClientMessage()
+            var message = new ClientMessage<DataType>()
             {
-                data = data,
-                opCode = opCode
+                Data = data,
+                OpCode = opCode
             };
 
             var serializedMessage = JsonConvert.SerializeObject(message);

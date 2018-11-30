@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DNet.Http;
 using DNet.Socket;
+using DNet.Structures;
 
 namespace DNet
 {
@@ -299,6 +300,12 @@ namespace DNet
     {
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(CdnInfo.cdn);
         public static readonly HttpClient httpClient = new HttpClient();
+
+        public readonly Dictionary<string, Guild> guilds;
+        public readonly Dictionary<string, User> users;
+
+        // TODO: Implement Channel structure
+        // public readonly Dictionary<string, Channel> channels;
 
         private readonly ClientManager manager;
 

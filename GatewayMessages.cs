@@ -2,28 +2,28 @@ using Newtonsoft.Json;
 
 namespace DNet.Http.Gateway
 {
-    public struct GatewayMessage
+    public struct GatewayMessage<DataType>
     {
         [JsonProperty("t")]
-        public string type { get; set; }
+        public string Type { get; set; }
 
         [JsonProperty("d")]
-        public dynamic data { get; set; }
+        public DataType Data { get; set; }
 
         [JsonProperty("op")]
-        public OpCode opCode { get; set; }
+        public OpCode OpCode { get; set; }
     }
 
-    public class ClientMessage
+    public class ClientMessage<DataType>
     {
         [JsonProperty("t")]
-        public string type { get; set; }
+        public string Type { get; set; }
 
         [JsonProperty("d")]
-        public dynamic data { get; set; }
+        public dynamic Data { get; set; }
 
         [JsonProperty("op")]
-        public OpCode opCode { get; set; }
+        public OpCode OpCode { get; set; }
     }
 
     public struct GatewayHelloMessage
