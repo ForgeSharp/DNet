@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 
 namespace DNet.Http.Gateway
@@ -12,6 +13,11 @@ namespace DNet.Http.Gateway
 
         [JsonProperty("op")]
         public OpCode OpCode { get; set; }
+
+        public static explicit operator GatewayMessage<DataType>(GatewayMessage<dynamic> value)
+        {
+            return (GatewayMessage<DataType>)value;
+        }
     }
 
     public class ClientMessage<DataType>

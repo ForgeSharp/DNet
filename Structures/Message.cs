@@ -7,7 +7,7 @@ namespace DNet.Structures
         Normal
     }
 
-    public struct MsgReaction
+    public struct MessageReaction
     {
         [JsonProperty("count")]
         public int Count { get; set; }
@@ -19,7 +19,7 @@ namespace DNet.Structures
         public Emoji Emoji { get; set; }
     }
 
-    public struct MsgAttachment
+    public struct MessageAttachment
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -43,7 +43,7 @@ namespace DNet.Structures
         public int? Width { get; set; }
     }
 
-    public struct Msg
+    public struct Message
     {
         public MessageType Type { get; set; }
 
@@ -53,13 +53,13 @@ namespace DNet.Structures
 
         public string Nonce { get; set; }
 
-        public MsgReaction[] Mentions { get; set; }
+        public MessageReaction[] Mentions { get; set; }
 
         [JsonProperty("mention_everyone")]
         public bool MentionsEveryone { get; set; }
 
         [JsonProperty("mention_roles")]
-        public MsgReaction[] MentionedRoles { get; set; }
+        public MessageReaction[] MentionedRoles { get; set; }
 
         public string Content { get; set; }
 

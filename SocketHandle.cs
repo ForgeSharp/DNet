@@ -11,7 +11,9 @@ using PureWebSockets;
 namespace DNet.Socket
 {
     // Discord Event Handler Delegates
-    public delegate void MessageCreateHandler(DNet.Structures.Msg message);
+    public delegate void MessageCreateHandler(Structures.Message message);
+    public delegate void GuildBasicHandler(Guild guild);
+    public delegate void GuildDeleteHandler(UnavailableGuild guild);
 
     public class SocketHandle
     {
@@ -19,9 +21,9 @@ namespace DNet.Socket
         public event EventHandler OnRateLimit;
         public event EventHandler OnReady;
         public event EventHandler OnResumed;
-        public event EventHandler OnGuildCreate;
-        public event EventHandler OnGuildDelete;
-        public event EventHandler OnGuildUpdate;
+        public event GuildBasicHandler OnGuildCreate;
+        public event GuildDeleteHandler OnGuildDelete;
+        public event GuildBasicHandler OnGuildUpdate;
         public event EventHandler OnGuildUnavailable;
         public event EventHandler OnGuildAvailable;
         public event EventHandler OnGuildMemberAdd;
@@ -38,7 +40,7 @@ namespace DNet.Socket
 
         private readonly Client client;
 
-        private Nullable<int> heartbeatLastSequence = null;
+        private int? heartbeatLastSequence = null;
         private PureWebSocket socket;
 
         public SocketHandle(Client client)
@@ -73,17 +75,17 @@ namespace DNet.Socket
             // TODO: Debugging
             // Console.WriteLine($"WS Received => {messageString}");
 
-            GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
+            GatewayMessage<dynamic> dynamicMessage = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
 
-            Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
+            Console.WriteLine($"WS Handling message with OPCODE '{dynamicMessage.OpCode}'");
 
             Console.WriteLine(messageString);
 
-            switch (message.OpCode)
+            switch (dynamicMessage.OpCode)
             {
                 case OpCode.Hello:
                     {
-                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(message.Data));
+                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(dynamicMessage.Data));
 
                         Console.WriteLine($"WS Acknowledged heartbeat at {helloMessage.heartbeatInterval}ms interval");
 
@@ -119,8 +121,6 @@ namespace DNet.Socket
                             )
                         );
 
-                        Console.WriteLine("Sending ...");
-
                         this.Send(OpCode.Identify, dat);
 
                         break;
@@ -128,26 +128,59 @@ namespace DNet.Socket
 
                 case OpCode.Dispatch:
                     {
-                        switch (message.Type)
+                        switch (dynamicMessage.Type)
                         {
+                            // Message Events
                             case "MESSAGE_CREATE":
                                 {
-                                    this.OnMessageCreate(JsonConvert.DeserializeObject<DNet.Structures.Msg>(JsonConvert.SerializeObject(message.Data)));
+                                    this.OnMessageCreate(JsonConvert.DeserializeObject<Structures.Message>(JsonConvert.SerializeObject(dynamicMessage.Data)));
+
+                                    break;
+                                }
+                            
+                            // Guild Events
+                            case "GUILD_CREATE":
+                                {
+                                    var message = (GatewayMessage<Guild>)dynamicMessage;
+
+                                    // Update local guild cache
+                                    this.client.guilds.Add(message.Data.Id, message.Data);
+
+                                    // Fire event
+                                    this.OnGuildCreate(message.Data);
 
                                     break;
                                 }
 
-                            case "GUILD_CREATE":
+                            case "GUILD_UPDATE":
                                 {
-                                    message = (GatewayMessage<Guild>)message;
-                                    if (this.client.guilds.ContainsKey(message.Data.))
+                                    var message = (GatewayMessage<Guild>)dynamicMessage;
+
+                                    // Update local guild cache
+                                    this.client.guilds.Add(message.Data.Id, message.Data);
+
+                                    // Fire event
+                                    this.OnGuildUpdate(message.Data);
+
+                                    break;
+                                }
+
+                            case "GUILD_DELETE":
+                                {
+                                    var message = (GatewayMessage<UnavailableGuild>)dynamicMessage;
+
+                                    // Update local guild cache
+                                    this.client.guilds.Remove(message.Data.Id);
+
+                                    // Fire event
+                                    this.OnGuildDelete(message.Data);
 
                                     break;
                                 }
 
                             default:
                                 {
-                                    Console.WriteLine($"Unknown dispatch message type: {message.Type}");
+                                    Console.WriteLine($"Unknown dispatch message type: {dynamicMessage.Type}");
 
                                     break;
                                 }
@@ -158,7 +191,7 @@ namespace DNet.Socket
 
                 default:
                     {
-                        Console.WriteLine($"WS Unable to handle OPCODE '{message.OpCode}' (Not implemented)");
+                        Console.WriteLine($"WS Unable to handle OPCODE '{dynamicMessage.OpCode}' (Not implemented)");
 
                         break;
                     }
