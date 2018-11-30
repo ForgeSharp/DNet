@@ -1,3 +1,4 @@
+using DNet.Http.Gateway;
 using Newtonsoft.Json;
 
 namespace DNet.Structures
@@ -45,10 +46,10 @@ namespace DNet.Structures
         public string SplashHash { get; set; }
 
         [JsonProperty("owner")]
-        public bool Owner { get; set; }
+        public bool? Owner { get; set; }
 
         [JsonProperty("permissions")]
-        public int Permissions { get; set; }
+        public int? Permissions { get; set; }
 
         [JsonProperty("region")]
         public string Region { get; set; }
@@ -60,7 +61,7 @@ namespace DNet.Structures
         public int AfkTimeout { get; set; }
 
         [JsonProperty("embed_enabled")]
-        public bool EmbedEnabled { get; set; }
+        public bool? EmbedEnabled { get; set; }
 
         [JsonProperty("embed_channel_id")]
         public string EmbedChannelId { get; set; }
@@ -90,7 +91,7 @@ namespace DNet.Structures
         public string ApplicationId { get; set; }
 
         [JsonProperty("widget_enabled")]
-        public bool WidgetEnabled { get; set; }
+        public bool? WidgetEnabled { get; set; }
 
         [JsonProperty("widget_channel_id")]
         public string WidgetChannelId { get; set; }
@@ -102,25 +103,24 @@ namespace DNet.Structures
         public string JoinedAt { get; set; }
 
         [JsonProperty("large")]
-        public bool Large { get; set; }
+        public bool? Large { get; set; }
 
         [JsonProperty("unavailable")]
-        public bool Unavailable { get; set; }
+        public bool? Unavailable { get; set; }
 
         [JsonProperty("member_count")]
-        public int MemberCount { get; set; }
+        public int? MemberCount { get; set; }
 
         [JsonProperty("members")]
-        public GuildMember[] Members { get; set; }
+        public GuildMember?[] Members { get; set; }
 
         // TODO: Not added: voice_states (see at https://discordapp.com/developers/docs/resources/guild#guild-object)
 
-        // TODO
-        // [JsonProperty("channels")]
-        // public Channel[] Channels { get; set; }
+        [JsonProperty("channels")]
+        public Channel?[] Channels { get; set; }
 
         [JsonProperty("presences")]
-        public ClientPresence[] Presences { get; set; }
+        public PresenceUpdateEvent?[] Presences { get; set; }
     }
 
     public struct UnavailableGuild

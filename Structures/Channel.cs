@@ -213,5 +213,12 @@ namespace DNet.Structures
 
         [JsonProperty("last_pin_timestamp")]
         public string LastPinTimestamp { get; set; }
+
+        // Source
+        [JsonIgnore]
+        private Client Client { get; set; }
+
+        // Resolvables
+        public Guild Guild => this.Client.guilds[this.GuildId];
     }
 }

@@ -48,13 +48,10 @@ namespace DNet.Socket
 
         private void SetupInternalHandlers()
         {
-            /*this.OnMessageCreate += (object sender, Structures.Message msg) => {
-                Console.WriteLine("Handle message!");
-            };*/
-
             this.OnGuildCreate += (object sender, Guild guild) =>
             {
-                Console.WriteLine("Guild id is", guild.Id);
+                // TODO: Hanging up on .Id access!
+                Console.WriteLine($"Guild id is {guild.Id} and name {guild.Name}");
 
                 // Update local guild cache
                 this.client.guilds.Add(guild.Id, guild);

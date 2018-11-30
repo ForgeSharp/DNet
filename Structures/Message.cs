@@ -116,6 +116,13 @@ namespace DNet.Structures
 
         [JsonProperty("application")]
         public MessageApplication? Application { get; set; }
+
+        // Source
+        [JsonIgnore]
+        private Client Client { get; set; }
+
+        // Resolvables
+        public Guild? Guild => this.Client.guilds[this.GuildId];
     }
 
     public struct MessageActivity

@@ -15,7 +15,7 @@ namespace DNet.Http.Gateway
         public OpCode OpCode { get; set; }
     }
 
-    public class ClientMessage<DataType>
+    public struct ClientMessage<DataType>
     {
         [JsonProperty("t")]
         public string Type { get; set; }
@@ -60,43 +60,43 @@ namespace DNet.Http.Gateway
     public struct MessageDeleteEvent
     {
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string Id { get; }
 
         [JsonProperty("channel_id")]
-        public string ChannelId { get; set; }
+        public string ChannelId { get; }
 
         [JsonProperty("guild_id")]
-        public string GuildId { get; set; }
+        public string GuildId { get; }
     }
 
     public struct MessageReactionEvent
     {
         [JsonProperty("user_id")]
-        public string UserId { get; set; }
+        public string UserId { get; }
 
         [JsonProperty("channel_id")]
-        public string ChannelId { get; set; }
+        public string ChannelId { get; }
 
         [JsonProperty("message_id")]
-        public string MessageId { get; set; }
+        public string MessageId { get; }
 
         [JsonProperty("guild_id")]
-        public string GuildId { get; set; }
+        public string GuildId { get; }
 
         // TODO: Partial emoji
         [JsonProperty("emoji")]
-        public Emoji Emoji { get; set; }
+        public Emoji Emoji { get; }
     }
 
     public struct MessageReactionRemoveAllEvent
     {
         [JsonProperty("channel_id")]
-        public string ChannelId { get; set; }
+        public string ChannelId { get; }
 
         [JsonProperty("message_id")]
-        public string MessageId { get; set; }
+        public string MessageId { get; }
 
         [JsonProperty("guild_id")]
-        public string GuildId { get; set; }
+        public string GuildId { get; }
     }
 }
