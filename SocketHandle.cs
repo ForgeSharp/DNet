@@ -10,21 +10,15 @@ using PureWebSockets;
 
 namespace DNet.Socket
 {
-    // Discord Event Handler Delegates
-    public delegate void MessageCreateHandler(Structures.Message message);
-    public delegate void GuildBasicHandler(Guild guild);
-    public delegate void GuildDeleteHandler(UnavailableGuild guild);
-    public delegate void PresenceUpdateHandler(PresenceUpdateEvent update);
-
     public class SocketHandle
     {
         // Discord Events
         public event EventHandler OnRateLimit;
         public event EventHandler OnReady;
         public event EventHandler OnResumed;
-        public event GuildBasicHandler OnGuildCreate;
-        public event GuildDeleteHandler OnGuildDelete;
-        public event GuildBasicHandler OnGuildUpdate;
+        public event EventHandler<Guild> OnGuildCreate;
+        public event EventHandler<Guild> OnGuildUpdate;
+        public event EventHandler<UnavailableGuild> OnGuildDelete;
         public event EventHandler OnGuildUnavailable;
         public event EventHandler OnGuildAvailable;
         public event EventHandler OnGuildMemberAdd;
@@ -35,11 +29,11 @@ namespace DNet.Socket
         public event EventHandler OnGuildMembersChunk;
         public event EventHandler OnGuildIntegrationsUpdate;
         // ...
-        public event MessageCreateHandler OnMessageCreate;
-        public event EventHandler OnMessageDelete;
+        public event EventHandler<Structures.Message> OnMessageCreate;
+        public event EventHandler<MessageDeleteEvent> OnMessageDelete;
         public event EventHandler OnMessageUpdate;
         // ...
-        public event PresenceUpdateHandler OnPresenceUpdate;
+        public event EventHandler<PresenceUpdateEvent> OnPresenceUpdate;
 
         private readonly Client client;
 
@@ -54,19 +48,24 @@ namespace DNet.Socket
 
         private void SetupInternalHandlers()
         {
-            this.OnMessageCreate += (Structures.Message msg) => { };
+            /*this.OnMessageCreate += (object sender, Structures.Message msg) => {
+                Console.WriteLine("Handle message!");
+            };*/
 
-            this.OnGuildCreate += (Guild guild) => {
+            this.OnGuildCreate += (object sender, Guild guild) =>
+            {
                 // Update local guild cache
                 this.client.guilds.Add(guild.Id, guild);
             };
 
-            this.OnGuildUpdate += (Guild guild) => {
+            this.OnGuildUpdate += (object sender, Guild guild) =>
+            {
                 // Update local guild cache
                 this.client.guilds.Add(guild.Id, guild);
             };
 
-            this.OnGuildDelete += (UnavailableGuild guild) => {
+            this.OnGuildDelete += (object sender, UnavailableGuild guild) =>
+            {
                 // Update local guild cache
                 this.client.guilds.Remove(guild.Id);
             };
@@ -107,8 +106,6 @@ namespace DNet.Socket
             GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
 
             Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
-
-            Console.WriteLine(messageString);
 
             switch (message.OpCode)
             {
@@ -158,30 +155,41 @@ namespace DNet.Socket
 
                 case OpCode.Dispatch:
                     {
+                        Console.WriteLine($" => '{message.Type}'");
+
                         switch (message.Type)
                         {
+                            // General events
+                            case "READY":
+                                {
+                                    // Fire event
+                                    this.OnReady(this, null);
+
+                                    break;
+                                }
+
                             // Message Events
                             case "MESSAGE_CREATE":
                                 {
                                     // Fire event
-                                    this.OnMessageCreate(JsonConvert.DeserializeObject<Structures.Message>(JsonConvert.SerializeObject(message.Data)));
+                                    this.OnMessageCreate(this, this.ConvertMessage<Structures.Message>(message));
 
                                     break;
                                 }
 
-                            case "MESSAGE_DELETE":
+                            /*case "MESSAGE_DELETE":
                                 {
                                     // Fire event
-                                    this.OnMessageDelete(message.Data);
+                                    this.OnMessageDelete(this, message.Data);
 
                                     break;
-                                }
-                            
+                                }*/
+
                             // Guild Events
-                            case "GUILD_CREATE":
+                            /*case "GUILD_CREATE":
                                 {
                                     // Fire event
-                                    this.OnGuildCreate(message.Data);
+                                    //this.OnGuildCreate(message.Data);
 
                                     break;
                                 }
@@ -189,7 +197,7 @@ namespace DNet.Socket
                             case "GUILD_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnGuildUpdate(message.Data);
+                                    this.OnGuildUpdate(this, message.Data);
 
                                     break;
                                 }
@@ -197,19 +205,20 @@ namespace DNet.Socket
                             case "GUILD_DELETE":
                                 {
                                     // Fire event
-                                    this.OnGuildDelete(message.Data);
+                                    this.OnGuildDelete(this, message.Data);
 
                                     break;
-                                }
+                                }*/
 
                             // User Events
-                            case "PRESENCE_UPDATE":
+                            /*case "PRESENCE_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnPresenceUpdate(message.Data);
+                                    this.OnPresenceUpdate(this, message.Data);
+                                    Console.WriteLine("pass!");
 
                                     break;
-                                }
+                                }*/
 
                             default:
                                 {
@@ -224,11 +233,16 @@ namespace DNet.Socket
 
                 default:
                     {
-                        Console.WriteLine($"WS Unable to handle OPCODE '{message.OpCode}' (Not implemented)");
+                        Console.WriteLine($"WS Unable to handle message with OPCODE '{message.OpCode}' (Not implemented)");
 
                         break;
                     }
             }
+        }
+
+        private DataType ConvertMessage<DataType>(GatewayMessage<dynamic> message)
+        {
+            return JsonConvert.DeserializeObject<DataType>(JsonConvert.SerializeObject(message.Data));
         }
 
         private void WS_OnClosed(WebSocketCloseStatus reason)
