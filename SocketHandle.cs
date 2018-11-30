@@ -4,25 +4,24 @@ using System.Threading.Tasks;
 using DNet.ClientMessages;
 using DNet.Http;
 using DNet.Http.Gateway;
+using DNet.Structures;
 using Newtonsoft.Json;
 using PureWebSockets;
 
 namespace DNet.Socket
 {
-    // Discord Event Handler Delegates
-    public delegate void MessageCreateHandler(DNet.Structures.Message message);
-
     public class SocketHandle
     {
+        // TODO
         // Discord Events
         public event EventHandler OnRateLimit;
         public event EventHandler OnReady;
         public event EventHandler OnResumed;
-        public event EventHandler OnGuildCreate;
-        public event EventHandler OnGuildDelete;
-        public event EventHandler OnGuildUpdate;
-        public event EventHandler OnGuildUnavailable;
-        public event EventHandler OnGuildAvailable;
+        public event EventHandler<Guild> OnGuildCreate;
+        public event EventHandler<Guild> OnGuildUpdate;
+        public event EventHandler<UnavailableGuild> OnGuildDelete;
+        //public event EventHandler<UnavailableGuild> OnGuildUnavailable;
+        //public event EventHandler<Guild> OnGuildAvailable;
         public event EventHandler OnGuildMemberAdd;
         public event EventHandler OnGuildMemberRemove;
         public event EventHandler OnGuildMemberUpdate;
@@ -31,18 +30,73 @@ namespace DNet.Socket
         public event EventHandler OnGuildMembersChunk;
         public event EventHandler OnGuildIntegrationsUpdate;
         // ...
-        public event MessageCreateHandler OnMessageCreate;
-        public event EventHandler OnMessageDelete;
+        public event EventHandler<Structures.Message> OnMessageCreate;
+        public event EventHandler<MessageDeleteEvent> OnMessageDelete;
         public event EventHandler OnMessageUpdate;
+        // ...
+        public event EventHandler<PresenceUpdateEvent> OnPresenceUpdate;
 
         private readonly Client client;
 
-        private Nullable<int> heartbeatLastSequence = null;
+        private int? heartbeatLastSequence = null;
         private PureWebSocket socket;
 
         public SocketHandle(Client client)
         {
             this.client = client;
+            this.SetupInternalHandlers();
+        }
+
+        private void SetupInternalHandlers()
+        {
+            this.OnGuildCreate += (object sender, Guild guild) =>
+            {
+                // TODO: Hanging up on .Id access!
+                Console.WriteLine($"Guild id is {guild.Id} and name {guild.Name}");
+
+                // Update local guild cache
+                this.client.guilds.Add(guild.Id, guild);
+            };
+
+            this.OnGuildUpdate += (object sender, Guild guild) =>
+            {
+                // Update local guild cache
+                this.client.guilds.Add(guild.Id, guild);
+            };
+
+            this.OnGuildDelete += (object sender, UnavailableGuild guild) =>
+            {
+                // Update local guild cache
+                this.client.guilds.Remove(guild.Id);
+            };
+
+            this.OnPresenceUpdate += (object sender, PresenceUpdateEvent update) =>
+            {
+                // TODO: Update user's properties, see (https://discordapp.com/developers/docs/topics/gateway#presence-update)
+                if (this.client.users.ContainsKey(update.User.Id))
+                {
+                    User user = this.client.users[update.User.Id];
+
+                    // TODO: Update cached user's presence, which is not present in User object, therefore must make a new dictionary saving presences.
+                }
+                else
+                {
+                    this.client.users.Add(update.User.Id, update.User);
+                    // TODO: Also save presence
+                }
+            };
+
+            // TODO
+            /* this.OnGuildUnavailable += (object sender, UnavailableGuild guild) =>
+            {
+                // TODO: Should not remove it
+                this.client.guilds.Remove(guild.Id);
+            };
+
+            this.OnGuildAvailable += (object sender, Guild guild) =>
+            {
+
+            }; */
         }
 
         public async Task Connect()
@@ -72,15 +126,15 @@ namespace DNet.Socket
             // TODO: Debugging
             // Console.WriteLine($"WS Received => {messageString}");
 
-            GatewayMessage message = JsonConvert.DeserializeObject<GatewayMessage>(messageString);
+            GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
 
-            Console.WriteLine($"WS Handling message with OPCODE '{message.opCode}'");
+            Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
 
-            switch (message.opCode)
+            switch (message.OpCode)
             {
                 case OpCode.Hello:
                     {
-                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(message.data));
+                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(message.Data));
 
                         Console.WriteLine($"WS Acknowledged heartbeat at {helloMessage.heartbeatInterval}ms interval");
 
@@ -106,6 +160,7 @@ namespace DNet.Socket
                             // TODO: Hard-coded
                             new int[] { 0, 1 },
 
+                            // TODO: Also hard-coded
                             new ClientPresence(
                                 new ClientPresenceGame("Sometg", 0),
 
@@ -116,8 +171,6 @@ namespace DNet.Socket
                             )
                         );
 
-                        Console.WriteLine("Sending ...");
-
                         this.Send(OpCode.Identify, dat);
 
                         break;
@@ -125,18 +178,73 @@ namespace DNet.Socket
 
                 case OpCode.Dispatch:
                     {
-                        switch (message.type)
+                        Console.WriteLine($" => '{message.Type}'");
+
+                        switch (message.Type)
                         {
+                            // General events
+                            case "READY":
+                                {
+                                    // Fire event
+                                    this.OnReady?.Invoke(this, null);
+
+                                    break;
+                                }
+
+                            // Message Events
                             case "MESSAGE_CREATE":
                                 {
-                                    this.OnMessageCreate(JsonConvert.DeserializeObject<DNet.Structures.Message>(JsonConvert.SerializeObject(message.data)));
+                                    // Fire event
+                                    this.OnMessageCreate?.Invoke(this, this.ConvertMessage<Structures.Message>(message));
+
+                                    break;
+                                }
+
+                            case "MESSAGE_DELETE":
+                                {
+                                    // Fire event
+                                    this.OnMessageDelete?.Invoke(this, this.ConvertMessage<MessageDeleteEvent>(message));
+
+                                    break;
+                                }
+
+                            // Guild Events
+                            case "GUILD_CREATE":
+                                {
+                                    // Fire event
+                                    this.OnGuildCreate?.Invoke(this, this.ConvertMessage<Guild>(message));
+
+                                    break;
+                                }
+
+                            case "GUILD_UPDATE":
+                                {
+                                    // Fire event
+                                    this.OnGuildUpdate?.Invoke(this, this.ConvertMessage<Guild>(message));
+
+                                    break;
+                                }
+
+                            case "GUILD_DELETE":
+                                {
+                                    // Fire event
+                                    this.OnGuildDelete?.Invoke(this, this.ConvertMessage<UnavailableGuild>(message));
+
+                                    break;
+                                }
+
+                            // User Events
+                            case "PRESENCE_UPDATE":
+                                {
+                                    // Fire event
+                                    this.OnPresenceUpdate?.Invoke(this, this.ConvertMessage<PresenceUpdateEvent>(message));
 
                                     break;
                                 }
 
                             default:
                                 {
-                                    Console.WriteLine($"Unknown dispatch message type: {message.type}");
+                                    Console.WriteLine($"Unknown dispatch message type: {message.Type}");
 
                                     break;
                                 }
@@ -147,11 +255,17 @@ namespace DNet.Socket
 
                 default:
                     {
-                        Console.WriteLine($"WS Unable to handle OPCODE '{message.opCode}' (Not implemented)");
+                        Console.WriteLine($"WS Unable to handle message with OPCODE '{message.OpCode}' (Not implemented)");
 
                         break;
                     }
             }
+        }
+
+        // TODO: This is required or will hang up (stop), because it JSON cannot serialize by JsonProperties attributes into dynamic, it has no way of knowing..
+        private DataType ConvertMessage<DataType>(GatewayMessage<dynamic> message)
+        {
+            return JsonConvert.DeserializeObject<DataType>(JsonConvert.SerializeObject(message.Data));
         }
 
         private void WS_OnClosed(WebSocketCloseStatus reason)
@@ -159,12 +273,12 @@ namespace DNet.Socket
             Console.WriteLine($"WS Socket closed => {reason.ToString()}");
         }
 
-        private void Send(OpCode opCode, dynamic data)
+        private void Send<DataType>(OpCode opCode, DataType data)
         {
-            var message = new ClientMessage()
+            var message = new ClientMessage<DataType>()
             {
-                data = data,
-                opCode = opCode
+                Data = data,
+                OpCode = opCode
             };
 
             var serializedMessage = JsonConvert.SerializeObject(message);

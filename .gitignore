@@ -5,4 +5,5 @@ obj/
 .env
 *.log
 paket-files/
+.vs/
 packages/

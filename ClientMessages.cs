@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json;
 
 namespace DNet.ClientMessages {
@@ -6,9 +5,9 @@ namespace DNet.ClientMessages {
         [JsonProperty("op")]
         public readonly int opCode;
         
-        public readonly Nullable<int> d;
+        public readonly int? d;
 
-        public ClientHeartbeatMessage(int opCode, Nullable<int> d) {
+        public ClientHeartbeatMessage(int opCode, int? d) {
             this.opCode = opCode;
             this.d = d;
         }

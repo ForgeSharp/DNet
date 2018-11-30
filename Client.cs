@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
-using DNet.ClientMessages;
 using DNet.Http;
-using DNet.Http.Gateway;
 using DNet.Socket;
-using Newtonsoft.Json;
-using PureWebSockets;
+using DNet.Structures;
 
 namespace DNet
 {
@@ -76,29 +72,6 @@ namespace DNet
         EmbedDisabled = 50004,
         CannotEditMessageByOther = 50005
         // ...
-    }
-
-    public enum DefaultMessageNotifications
-    {
-        All,
-        Mentions
-    }
-
-    public enum ActivityType
-    {
-        Playing,
-        Streaming,
-        Listening,
-        Watching
-    }
-
-    public enum ChannelType
-    {
-        Text,
-        Dm,
-        Voice,
-        Group,
-        Category
     }
 
     public enum ClientApplicationAssetType
@@ -300,10 +273,16 @@ namespace DNet
         }
     }
 
-    public class Client
+    public class Client : IDisposable
     {
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(CdnInfo.cdn);
         public static readonly HttpClient httpClient = new HttpClient();
+
+        public readonly Dictionary<string, Guild> guilds;
+        public readonly Dictionary<string, User> users;
+
+        // TODO: Implement Channel structure
+        // public readonly Dictionary<string, Channel> channels;
 
         private readonly ClientManager manager;
 
@@ -312,6 +291,8 @@ namespace DNet
         public Client()
         {
             this.manager = new ClientManager(this);
+            this.guilds = new Dictionary<string, Guild>();
+            this.users = new Dictionary<string, User>(); ;
         }
 
         public Task Connect(string token)
@@ -338,7 +319,8 @@ namespace DNet
                 {"content", content}
             });
 
-            if (response.StatusCode != HttpStatusCode.OK) {
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
                 Console.WriteLine($"Could not create message: {response.StatusCode}");
             }
         }
@@ -346,6 +328,12 @@ namespace DNet
         public static Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> values)
         {
             return Client.httpClient.PostAsync(url, new FormUrlEncodedContent(values));
+        }
+
+        public void Dispose()
+        {
+            this.users.Clear();
+            this.guilds.Clear();
         }
     }
 }
