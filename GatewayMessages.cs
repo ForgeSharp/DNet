@@ -41,9 +41,8 @@ namespace DNet.Http.Gateway
         [JsonProperty("roles")]
         public string[] RoleIds { get; set; }
 
-        // TODO:
-        // [JsonProperty("game")]
-        // public Activity? Game { get; set; }
+        [JsonProperty("game")]
+        public Activity? Game { get; set; }
 
         [JsonProperty("guild_id")]
         public string GuildId { get; set; }
@@ -52,9 +51,8 @@ namespace DNet.Http.Gateway
         [JsonProperty("status")]
         public string Status { get; set; }
 
-        // TODO:
-        // [JsonProperty("activities")]
-        // public Activity[] Activities { get; set; }
+        [JsonProperty("activities")]
+        public Activity[] Activities { get; set; }
     }
 
     public struct MessageDeleteEvent

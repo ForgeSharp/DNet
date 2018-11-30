@@ -17,7 +17,7 @@ namespace DNet.Structures
         public string AvatarHash { get; set; }
 
         [JsonProperty("bot")]
-        public bool Bot { get; set; }
+        public bool? Bot { get; set; }
 
         [JsonProperty("mfa_enabled")]
         public bool? MfaEnabled { get; set; }

@@ -186,18 +186,23 @@ namespace DNet.Structures
 
     public struct GuildMember
     {
-        // TODO: Use Role struct
-        [JsonProperty("roles")]
-        public string[] Roles { get; set; }
+        [JsonProperty("user")]
+        public User User { get; set; }
 
         [JsonProperty("nick")]
         public string Nickname { get; set; }
 
-        [JsonProperty("mute")]
-        public bool Muted { get; set; }
+        [JsonProperty("roles")]
+        public string[] Roles { get; set; }
+
+        [JsonProperty("joined_at")]
+        public string JoinedAt { get; set; }
 
         [JsonProperty("deaf")]
         public bool Deaf { get; set; }
+
+        [JsonProperty("mute")]
+        public bool Muted { get; set; }
     }
 
     public struct GuildBan

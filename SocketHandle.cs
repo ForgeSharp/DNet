@@ -12,6 +12,7 @@ namespace DNet.Socket
 {
     public class SocketHandle
     {
+        // TODO
         // Discord Events
         public event EventHandler OnRateLimit;
         public event EventHandler OnReady;
@@ -19,8 +20,8 @@ namespace DNet.Socket
         public event EventHandler<Guild> OnGuildCreate;
         public event EventHandler<Guild> OnGuildUpdate;
         public event EventHandler<UnavailableGuild> OnGuildDelete;
-        public event EventHandler OnGuildUnavailable;
-        public event EventHandler OnGuildAvailable;
+        //public event EventHandler<UnavailableGuild> OnGuildUnavailable;
+        //public event EventHandler<Guild> OnGuildAvailable;
         public event EventHandler OnGuildMemberAdd;
         public event EventHandler OnGuildMemberRemove;
         public event EventHandler OnGuildMemberUpdate;
@@ -69,10 +70,33 @@ namespace DNet.Socket
                 this.client.guilds.Remove(guild.Id);
             };
 
-            /* this.OnPresenceUpdate += (ClientPresence presence) => {
-             * // TODO: Update user's properties, see (https://discordapp.com/developers/docs/topics/gateway#presence-update)
-                                    //this.client.users.Add(message.Data.User.Id, message.Data.);
-            } */
+            this.OnPresenceUpdate += (object sender, PresenceUpdateEvent update) =>
+            {
+                // TODO: Update user's properties, see (https://discordapp.com/developers/docs/topics/gateway#presence-update)
+                if (this.client.users.ContainsKey(update.User.Id))
+                {
+                    User user = this.client.users[update.User.Id];
+
+                    // TODO: Update cached user's presence, which is not present in User object, therefore must make a new dictionary saving presences.
+                }
+                else
+                {
+                    this.client.users.Add(update.User.Id, update.User);
+                    // TODO: Also save presence
+                }
+            };
+
+            // TODO
+            /* this.OnGuildUnavailable += (object sender, UnavailableGuild guild) =>
+            {
+                // TODO: Should not remove it
+                this.client.guilds.Remove(guild.Id);
+            };
+
+            this.OnGuildAvailable += (object sender, Guild guild) =>
+            {
+
+            }; */
         }
 
         public async Task Connect()
