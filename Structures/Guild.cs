@@ -123,15 +123,65 @@ namespace DNet.Structures
         public ClientPresence[] Presences { get; set; }
     }
 
+    public struct UnavailableGuild
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("unavailable")]
+        public bool Unavailable { get; set; }
+    }
+
     public struct Emoji
     {
-        // TODO
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("roles")]
+        public Role[] Roles { get; set; }
+
+        [JsonProperty("user")]
+        public User? Author { get; set; }
+
+        [JsonProperty("require_colons")]
+        public bool RequiresColons { get; set; }
+
+        [JsonProperty("managed")]
+        public bool Managed { get; set; }
+
+        [JsonProperty("animated")]
+        public bool Animated { get; set; }
     }
 
     // TODO:
     public struct Role
     {
+        [JsonProperty("id")]
         public string Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("color")]
+        public int Color { get; set; }
+
+        [JsonProperty("hoist")]
+        public bool Hoisted { get; set; }
+
+        [JsonProperty("position")]
+        public int Position { get; set; }
+
+        [JsonProperty("permissions")]
+        public int Permissions { get; set; }
+
+        [JsonProperty("managed")]
+        public bool Managed { get; set; }
+
+        [JsonProperty("mentionable")]
+        public bool Mentionable { get; set; }
     }
 
     public struct GuildMember
@@ -148,5 +198,14 @@ namespace DNet.Structures
 
         [JsonProperty("deaf")]
         public bool Deaf { get; set; }
+    }
+
+    public struct GuildBan
+    {
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+
+        [JsonProperty("user")]
+        public User User { get; set; }
     }
 }

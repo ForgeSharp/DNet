@@ -88,15 +88,6 @@ namespace DNet
         Watching
     }
 
-    public enum ChannelType
-    {
-        Text,
-        Dm,
-        Voice,
-        Group,
-        Category
-    }
-
     public enum ClientApplicationAssetType
     {
         Small,
