@@ -29,7 +29,7 @@ namespace DNet.Socket
         public event EventHandler OnGuildMembersChunk;
         public event EventHandler OnGuildIntegrationsUpdate;
         // ...
-        public event EventHandler<Structures.Message> OnMessageCreate;
+        public event EventHandler OnMessageCreate;
         public event EventHandler<MessageDeleteEvent> OnMessageDelete;
         public event EventHandler OnMessageUpdate;
         // ...
@@ -106,6 +106,7 @@ namespace DNet.Socket
             GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
 
             Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
+            Console.WriteLine(messageString);
 
             switch (message.OpCode)
             {
@@ -163,7 +164,7 @@ namespace DNet.Socket
                             case "READY":
                                 {
                                     // Fire event
-                                    this.OnReady(this, null);
+                                    this.OnReady?.Invoke(this, null);
 
                                     break;
                                 }
@@ -172,24 +173,24 @@ namespace DNet.Socket
                             case "MESSAGE_CREATE":
                                 {
                                     // Fire event
-                                    this.OnMessageCreate(this, this.ConvertMessage<Structures.Message>(message));
+                                    this.OnMessageCreate?.Invoke(this, null);
 
                                     break;
                                 }
 
-                            /*case "MESSAGE_DELETE":
+                            case "MESSAGE_DELETE":
                                 {
                                     // Fire event
-                                    this.OnMessageDelete(this, message.Data);
+                                    this.OnMessageDelete?.Invoke(this, message.Data);
 
                                     break;
-                                }*/
+                                }
 
                             // Guild Events
-                            /*case "GUILD_CREATE":
+                            case "GUILD_CREATE":
                                 {
                                     // Fire event
-                                    //this.OnGuildCreate(message.Data);
+                                    this.OnGuildCreate?.Invoke(this, message.Data);
 
                                     break;
                                 }
@@ -197,7 +198,7 @@ namespace DNet.Socket
                             case "GUILD_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnGuildUpdate(this, message.Data);
+                                    this.OnGuildUpdate?.Invoke(this, message.Data);
 
                                     break;
                                 }
@@ -205,20 +206,19 @@ namespace DNet.Socket
                             case "GUILD_DELETE":
                                 {
                                     // Fire event
-                                    this.OnGuildDelete(this, message.Data);
+                                    this.OnGuildDelete?.Invoke(this, message.Data);
 
                                     break;
-                                }*/
+                                }
 
                             // User Events
-                            /*case "PRESENCE_UPDATE":
+                            case "PRESENCE_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnPresenceUpdate(this, message.Data);
-                                    Console.WriteLine("pass!");
+                                    this.OnPresenceUpdate?.Invoke(this, message.Data);
 
                                     break;
-                                }*/
+                                }
 
                             default:
                                 {
