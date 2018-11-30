@@ -49,6 +49,32 @@ namespace DNet.Socket
         public SocketHandle(Client client)
         {
             this.client = client;
+            this.SetupInternalHandlers();
+        }
+
+        private void SetupInternalHandlers()
+        {
+            this.OnMessageCreate += (Structures.Message msg) => { };
+
+            this.OnGuildCreate += (Guild guild) => {
+                // Update local guild cache
+                this.client.guilds.Add(guild.Id, guild);
+            };
+
+            this.OnGuildUpdate += (Guild guild) => {
+                // Update local guild cache
+                this.client.guilds.Add(guild.Id, guild);
+            };
+
+            this.OnGuildDelete += (UnavailableGuild guild) => {
+                // Update local guild cache
+                this.client.guilds.Remove(guild.Id);
+            };
+
+            /* this.OnPresenceUpdate += (ClientPresence presence) => {
+             * // TODO: Update user's properties, see (https://discordapp.com/developers/docs/topics/gateway#presence-update)
+                                    //this.client.users.Add(message.Data.User.Id, message.Data.);
+            } */
         }
 
         public async Task Connect()
@@ -78,17 +104,17 @@ namespace DNet.Socket
             // TODO: Debugging
             // Console.WriteLine($"WS Received => {messageString}");
 
-            GatewayMessage<dynamic> dynamicMessage = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
+            GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
 
-            Console.WriteLine($"WS Handling message with OPCODE '{dynamicMessage.OpCode}'");
+            Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
 
             Console.WriteLine(messageString);
 
-            switch (dynamicMessage.OpCode)
+            switch (message.OpCode)
             {
                 case OpCode.Hello:
                     {
-                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(dynamicMessage.Data));
+                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(message.Data));
 
                         Console.WriteLine($"WS Acknowledged heartbeat at {helloMessage.heartbeatInterval}ms interval");
 
@@ -132,12 +158,21 @@ namespace DNet.Socket
 
                 case OpCode.Dispatch:
                     {
-                        switch (dynamicMessage.Type)
+                        switch (message.Type)
                         {
                             // Message Events
                             case "MESSAGE_CREATE":
                                 {
-                                    this.OnMessageCreate(JsonConvert.DeserializeObject<Structures.Message>(JsonConvert.SerializeObject(dynamicMessage.Data)));
+                                    // Fire event
+                                    this.OnMessageCreate(JsonConvert.DeserializeObject<Structures.Message>(JsonConvert.SerializeObject(message.Data)));
+
+                                    break;
+                                }
+
+                            case "MESSAGE_DELETE":
+                                {
+                                    // Fire event
+                                    this.OnMessageDelete(message.Data);
 
                                     break;
                                 }
@@ -145,12 +180,6 @@ namespace DNet.Socket
                             // Guild Events
                             case "GUILD_CREATE":
                                 {
-                                    // TODO
-                                    var message = /*(GatewayMessage<Guild>)*/dynamicMessage;
-
-                                    // Update local guild cache
-                                    this.client.guilds.Add(message.Data.Id, message.Data);
-
                                     // Fire event
                                     this.OnGuildCreate(message.Data);
 
@@ -159,12 +188,6 @@ namespace DNet.Socket
 
                             case "GUILD_UPDATE":
                                 {
-                                    // TODO
-                                    var message = /*(GatewayMessage<Guild>)*/dynamicMessage;
-
-                                    // Update local guild cache
-                                    this.client.guilds.Add(message.Data.Id, message.Data);
-
                                     // Fire event
                                     this.OnGuildUpdate(message.Data);
 
@@ -173,12 +196,6 @@ namespace DNet.Socket
 
                             case "GUILD_DELETE":
                                 {
-                                    // TODO
-                                    var message = /*(GatewayMessage<UnavailableGuild>)*/dynamicMessage;
-
-                                    // Update local guild cache
-                                    this.client.guilds.Remove(message.Data.Id);
-
                                     // Fire event
                                     this.OnGuildDelete(message.Data);
 
@@ -188,14 +205,6 @@ namespace DNet.Socket
                             // User Events
                             case "PRESENCE_UPDATE":
                                 {
-                                    // TODO
-                                    var message = /*(GatewayMessage<PresenceUpdate>)*/dynamicMessage;
-
-                                    // Update local guild cache
-
-                                    // TODO: Update user's properties, see (https://discordapp.com/developers/docs/topics/gateway#presence-update)
-                                    //this.client.users.Add(message.Data.User.Id, message.Data.);
-
                                     // Fire event
                                     this.OnPresenceUpdate(message.Data);
 
@@ -204,7 +213,7 @@ namespace DNet.Socket
 
                             default:
                                 {
-                                    Console.WriteLine($"Unknown dispatch message type: {dynamicMessage.Type}");
+                                    Console.WriteLine($"Unknown dispatch message type: {message.Type}");
 
                                     break;
                                 }
@@ -215,7 +224,7 @@ namespace DNet.Socket
 
                 default:
                     {
-                        Console.WriteLine($"WS Unable to handle OPCODE '{dynamicMessage.OpCode}' (Not implemented)");
+                        Console.WriteLine($"WS Unable to handle OPCODE '{message.OpCode}' (Not implemented)");
 
                         break;
                     }

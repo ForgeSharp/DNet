@@ -74,20 +74,6 @@ namespace DNet
         // ...
     }
 
-    public enum DefaultMessageNotifications
-    {
-        All,
-        Mentions
-    }
-
-    public enum ActivityType
-    {
-        Playing,
-        Streaming,
-        Listening,
-        Watching
-    }
-
     public enum ClientApplicationAssetType
     {
         Small,
@@ -287,7 +273,7 @@ namespace DNet
         }
     }
 
-    public class Client
+    public class Client : IDisposable
     {
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(CdnInfo.cdn);
         public static readonly HttpClient httpClient = new HttpClient();
@@ -305,6 +291,8 @@ namespace DNet
         public Client()
         {
             this.manager = new ClientManager(this);
+            this.guilds = new Dictionary<string, Guild>();
+            this.users = new Dictionary<string, User>(); ;
         }
 
         public Task Connect(string token)
@@ -331,7 +319,8 @@ namespace DNet
                 {"content", content}
             });
 
-            if (response.StatusCode != HttpStatusCode.OK) {
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
                 Console.WriteLine($"Could not create message: {response.StatusCode}");
             }
         }
@@ -339,6 +328,12 @@ namespace DNet
         public static Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> values)
         {
             return Client.httpClient.PostAsync(url, new FormUrlEncodedContent(values));
+        }
+
+        public void Dispose()
+        {
+            this.users.Clear();
+            this.guilds.Clear();
         }
     }
 }

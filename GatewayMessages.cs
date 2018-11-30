@@ -56,4 +56,47 @@ namespace DNet.Http.Gateway
         // [JsonProperty("activities")]
         // public Activity[] Activities { get; set; }
     }
+
+    public struct MessageDeleteEvent
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("channel_id")]
+        public string ChannelId { get; set; }
+
+        [JsonProperty("guild_id")]
+        public string GuildId { get; set; }
+    }
+
+    public struct MessageReactionEvent
+    {
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty("channel_id")]
+        public string ChannelId { get; set; }
+
+        [JsonProperty("message_id")]
+        public string MessageId { get; set; }
+
+        [JsonProperty("guild_id")]
+        public string GuildId { get; set; }
+
+        // TODO: Partial emoji
+        [JsonProperty("emoji")]
+        public Emoji Emoji { get; set; }
+    }
+
+    public struct MessageReactionRemoveAllEvent
+    {
+        [JsonProperty("channel_id")]
+        public string ChannelId { get; set; }
+
+        [JsonProperty("message_id")]
+        public string MessageId { get; set; }
+
+        [JsonProperty("guild_id")]
+        public string GuildId { get; set; }
+    }
 }
