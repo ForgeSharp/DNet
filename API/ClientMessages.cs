@@ -1,3 +1,4 @@
+using DNet.Core;
 using Newtonsoft.Json;
 
 namespace DNet.ClientMessages {

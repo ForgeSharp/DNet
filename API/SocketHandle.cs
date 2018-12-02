@@ -2,9 +2,11 @@ using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using DNet.ClientMessages;
+using DNet.Core;
 using DNet.Http;
 using DNet.Http.Gateway;
 using DNet.Structures;
+using DNet.Web;
 using Newtonsoft.Json;
 using PureWebSockets;
 
@@ -104,9 +106,9 @@ namespace DNet.Socket
             Console.WriteLine($"Authenticating using token '{this.client.GetToken()}'");
 
             // TODO: Use response
-            var response = await Fetch.GetJsonAsyncAuthorized<GetGatewayBotResponse>(API.BotGateway(), this.client.GetToken());
+            var response = await Fetch.GetJsonAsyncAuthorized<GetGatewayBotResponse>(DiscordAPI.BotGateway(), this.client.GetToken());
             var convertedResponse = JsonConvert.SerializeObject(response);
-            var connectionUrl = (string)JsonConvert.DeserializeObject<dynamic>(await Fetch.GetAsync(API.Gateway())).url;
+            var connectionUrl = (string)JsonConvert.DeserializeObject<dynamic>(await Fetch.GetAsync(DiscordAPI.Gateway())).url;
 
             this.socket = new PureWebSocket(connectionUrl, new PureWebSocketOptions() { });
 

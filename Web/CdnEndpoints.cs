@@ -1,90 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
-namespace DNet.Http
+namespace DNet.Web
 {
-    public enum FetchAuthorizationType
-    {
-        [Description("Bot")]
-        Bot
-        // TODO: User
-    }
-
-    public struct FetchAuthorization
-    {
-        public readonly string type;
-    }
-
-    public static class Fetch
-    {
-        public static async Task<string> GetAsync(string uri)
-        {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                return await reader.ReadToEndAsync();
-            }
-        }
-
-        public static async Task<ResponseType> GetJsonAsync<ResponseType>(string uri)
-        {
-            return JsonConvert.DeserializeObject<ResponseType>(await Fetch.GetAsync(uri));
-        }
-
-        public static async Task<string> GetAsyncAuthorized(string url, string token)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("authorization", $"Bot {token}");
-
-                return await client.GetStringAsync(url);
-            }
-        }
-
-        public static async Task<ResponseType> GetJsonAsyncAuthorized<ResponseType>(string url, string token)
-        {
-            return JsonConvert.DeserializeObject<ResponseType>(await Fetch.GetAsyncAuthorized(url, token));
-        }
-    }
-
-    public struct SessionStartLimit
-    {
-        public readonly int total;
-        public readonly int remaining;
-
-        [JsonProperty("reset_after")]
-        public readonly int resetAfter;
-    }
-
-    public struct GetGatewayBotResponse
-    {
-        public readonly string url;
-        public readonly int shards;
-
-        [JsonProperty("session_start_limit")]
-        public readonly SessionStartLimit sessionStartLimit;
-    }
-
-    public static class CdnInfo
-    {
-        public static int version = 7;
-        public static string api = "https://discordapp.com/api";
-        public static string cdn = "https://cdn.discordapp.com";
-        public static string invite = "https://discord.gg";
-    }
-
     // TODO: Use direct CdnInfo.api/cdn/invite instead of single root
     public class CdnEndpoints
     {
@@ -92,7 +10,7 @@ namespace DNet.Http
         public static readonly int[] AllowedImageSizes = { 16, 32, 64, 128, 256, 512, 1024, 2048 };
         public static readonly string[] AllowedImageFormats = { "webp", "png", "jpg", "gif" };
 
-        private string root;
+        private readonly string root;
 
         public CdnEndpoints(string root)
         {
@@ -171,24 +89,6 @@ namespace DNet.Http
         public string Invite(string code)
         {
             return $"{this.root}/{code}";
-        }
-    }
-
-    public static class API
-    {
-        public static string BotGateway()
-        {
-            return $"{CdnInfo.api}/gateway/bot";
-        }
-
-        public static string Gateway()
-        {
-            return $"{CdnInfo.api}/gateway";
-        }
-
-        public static string CreateMessage(string channel, string content)
-        {
-            return $"{CdnInfo.api}/channels/{channel}/messages";
         }
     }
 }
