@@ -18,7 +18,7 @@ namespace DNet
         // TODO
         public User? User { get; private set; }
 
-        public static readonly CdnEndpoints endpoints = new CdnEndpoints(CdnInfo.cdn);
+        public static readonly CdnEndpoints endpoints = new CdnEndpoints(DiscordEndpoints.CDN);
         public static readonly HttpClient httpClient = new HttpClient();
 
         public readonly Dictionary<string, Guild> guilds;

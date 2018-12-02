@@ -6,27 +6,27 @@ namespace DNet.Http
     {
         public static string BotGateway()
         {
-            return $"{CdnInfo.api}/gateway/bot";
+            return $"{DiscordEndpoints.API}/gateway/bot";
         }
 
         public static string Gateway()
         {
-            return $"{CdnInfo.api}/gateway";
+            return $"{DiscordEndpoints.API}/gateway";
         }
 
         public static string CreateMessage(string channel, string content)
         {
-            return $"/channels/{channel}/messages";
+            return $"{DiscordEndpoints.API}/channels/{channel}/messages";
         }
 
         public static string Reaction(string channel, string message, string emoji, string user = "@me")
         {
-            return $"/channels/{channel}/messages/{message}/reactions/{emoji}/{user}";
+            return $"{DiscordEndpoints.API}/channels/{channel}/messages/{message}/reactions/{emoji}/{user}";
         }
 
         public static string Message(string channel, string message)
         {
-            return $"/channels/{channel}/messages/{message}";
+            return $"{DiscordEndpoints.API}/channels/{channel}/messages/{message}";
         }
     }
 }

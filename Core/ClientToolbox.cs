@@ -130,7 +130,7 @@ namespace DNet.Core
         /// </summary>
         public static Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> values = null)
         {
-            return Client.httpClient.PostAsync($"{CdnInfo.api}{url}", values != null ? new FormUrlEncodedContent(values) : null);
+            return Client.httpClient.PostAsync(url, values != null ? new FormUrlEncodedContent(values) : null);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace DNet.Core
         /// </summary>
         public static Task<HttpResponseMessage> GetAsync(string url)
         {
-            return Client.httpClient.GetAsync($"{CdnInfo.api}{url}");
+            return Client.httpClient.GetAsync(url);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace DNet.Core
         /// </summary>
         public static Task<HttpResponseMessage> PutAsync(string url, Dictionary<string, string> values = null)
         {
-            return Client.httpClient.PutAsync($"{CdnInfo.api}{url}", values != null ? new FormUrlEncodedContent(values) : null);
+            return Client.httpClient.PutAsync(url, values != null ? new FormUrlEncodedContent(values) : null);
         }
 
         // TODO: Cleanup inconsistency/mess
@@ -162,7 +162,7 @@ namespace DNet.Core
                 body.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
             }
 
-            return Client.httpClient.PatchAsync($"{CdnInfo.api}{url}", body);
+            return Client.httpClient.PatchAsync(url, body);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace DNet.Core
         /// </summary>
         public static Task<HttpResponseMessage> DeleteAsync(string url)
         {
-            return Client.httpClient.DeleteAsync($"{CdnInfo.api}{url}");
+            return Client.httpClient.DeleteAsync(url);
         }
     }
 }
