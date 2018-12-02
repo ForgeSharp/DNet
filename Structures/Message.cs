@@ -1,3 +1,4 @@
+using DNet.Builders;
 using DNet.Core;
 using DNet.Structures.Channels;
 using DNet.Structures.Guilds;
@@ -140,8 +141,6 @@ namespace DNet.Structures
                 return null;
             }
 
-            Console.WriteLine("Editing ... {0}", edit.Content);
-
             return this.Client.toolbox.EditMessage(this.ChannelId, this.Id, edit);
         }
 
@@ -158,6 +157,11 @@ namespace DNet.Structures
             {
                 Embed = embed
             });
+        }
+
+        public Task<Message> Edit(RichEmbed richEmbed)
+        {
+            return this.Edit(richEmbed.Build());
         }
     }
 
