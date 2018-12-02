@@ -16,7 +16,17 @@ namespace DNet.Http
 
         public static string CreateMessage(string channel, string content)
         {
-            return $"{CdnInfo.api}/channels/{channel}/messages";
+            return $"/channels/{channel}/messages";
+        }
+
+        public static string Reaction(string channel, string message, string emoji, string user = "@me")
+        {
+            return $"/channels/{channel}/messages/{message}/reactions/{emoji}/{user}";
+        }
+
+        public static string Message(string channel, string message)
+        {
+            return $"/channels/{channel}/messages/{message}";
         }
     }
 }

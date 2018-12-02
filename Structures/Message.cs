@@ -1,6 +1,9 @@
+using DNet.Core;
 using DNet.Structures.Channels;
 using DNet.Structures.Guilds;
 using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 namespace DNet.Structures
 {
@@ -52,7 +55,7 @@ namespace DNet.Structures
         public int? Width { get; set; }
     }
 
-    public struct Message
+    public class Message
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -120,11 +123,42 @@ namespace DNet.Structures
         public MessageApplication? Application { get; set; }
 
         // Source
+        // TODO: Should be set by reference?
         [JsonIgnore]
-        private Client Client { get; set; }
+        public Client Client { get; set; }
 
         // Resolvables
         public Guild? Guild => this.Client.guilds[this.GuildId];
+
+        // TODO
+        //public bool Editable => this.Client.User.Id == this.Author.Id;
+
+        public Task<Message> Edit(MessageEdit edit)
+        {
+            if (this.Client == null)
+            {
+                return null;
+            }
+
+            Console.WriteLine("Editing ... {0}", edit.Content);
+
+            return this.Client.toolbox.EditMessage(this.ChannelId, this.Id, edit);
+        }
+
+        public Task<Message> Edit(string content)
+        {
+            return this.Edit(new MessageEdit() {
+                Content = content
+            });
+        }
+
+        public Task<Message> Edit(Embed embed)
+        {
+            return this.Edit(new MessageEdit()
+            {
+                Embed = embed
+            });
+        }
     }
 
     public struct MessageActivity
