@@ -63,10 +63,13 @@ namespace DNet.Core
 
         GuildBanRemove,
 
+        [Description("channelCreate")]
         ChannelCreate,
 
+        [Description("channelDelete")]
         ChannelDelete,
 
+        [Description("channelUpdate")]
         ChannelUpdate,
 
         ChannelPinsUpdate,
@@ -77,16 +80,21 @@ namespace DNet.Core
         [Description("messageDelete")]
         MessageDelete,
 
+        [Description("messageUpdate")]
         MessageUpdate,
 
+        [Description("messageBulkDelete")]
         MessageBulkDelete,
 
+        [Description("messageReactionAdd")]
         MessageReactionAdd,
 
+        [Description("messageReactionRemove")]
         MessageReactionRemove,
 
         MessageReactionRemoveAll,
 
+        [Description("userUpdate")]
         UserUpdate,
 
         UserNoteUpdate,
@@ -101,8 +109,10 @@ namespace DNet.Core
 
         VoiceBroadcastUnsubscribe,
 
+        [Description("typingStart")]
         TypingStart,
 
+        [Description("typingStop")]
         TypingStop,
 
         WebhooksUpdate,

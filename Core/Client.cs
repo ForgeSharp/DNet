@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DNet.Core;
@@ -38,6 +36,10 @@ namespace DNet
             this.users = new Dictionary<string, User>(); ;
         }
 
+        // TODO: Check if already connected, if so, disconnect THEN connect new session
+        /// <summary>
+        /// Initiate connection the client to Discord's gateway
+        /// </summary>
         public Task Connect(string token)
         {
             this.token = token;
@@ -51,28 +53,40 @@ namespace DNet
             return this.token;
         }
 
+        /// <summary>
+        /// Get the socket handle for event handling
+        /// </summary>
         public SocketHandle GetHandle()
         {
             return this.manager.socketHandle;
         }
 
-        public async void CreateMessage(string channel, string content)
+        // TODO: Return the message
+        /// <summary>
+        /// Create a message in the specified channel
+        /// </summary>
+        /// <param name="channel">The channel in which to send the message</param>
+        /// <param name="content">The message's content</param>
+        public async Task<bool> CreateMessage(string channel, string content)
         {
             var response = await Client.PostAsync(DiscordAPI.CreateMessage(channel, content), new Dictionary<string, string>() {
                 {"content", content}
             });
 
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                Console.WriteLine($"Could not create message: {response.StatusCode}");
-            }
+            return response.IsSuccessStatusCode;
         }
 
+        /// <summary>
+        /// Send an asynchronous POST-request
+        /// </summary>
         public static Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> values)
         {
             return Client.httpClient.PostAsync(url, new FormUrlEncodedContent(values));
         }
 
+        /// <summary>
+        /// Dispose used resources
+        /// </summary>
         public void Dispose()
         {
             this.users.Clear();
