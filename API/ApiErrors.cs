@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DNet.API
+﻿namespace DNet.API
 {
     public enum ApiErrors : int
     {

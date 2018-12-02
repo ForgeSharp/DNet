@@ -1,3 +1,5 @@
+using DNet.Structures.Channels;
+using DNet.Structures.Guilds;
 using Newtonsoft.Json;
 
 namespace DNet.Structures

@@ -8,6 +8,7 @@ using DNet.Core;
 using DNet.Http;
 using DNet.Socket;
 using DNet.Structures;
+using DNet.Structures.Guilds;
 using DNet.Web;
 
 namespace DNet
