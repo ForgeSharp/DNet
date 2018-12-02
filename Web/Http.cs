@@ -6,7 +6,7 @@ namespace DNet.Http
     {
         public static string BotGateway()
         {
-            return $"{DiscordEndpoints.API}/gateway/bot";
+            return $"{DiscordAPI.Gateway()}/bot";
         }
 
         public static string Gateway()
@@ -14,19 +14,29 @@ namespace DNet.Http
             return $"{DiscordEndpoints.API}/gateway";
         }
 
-        public static string CreateMessage(string channel, string content)
+        public static string Channel(string channel)
         {
-            return $"{DiscordEndpoints.API}/channels/{channel}/messages";
+            return $"{DiscordEndpoints.API}/channels/{channel}";
         }
 
-        public static string Reaction(string channel, string message, string emoji, string user = "@me")
+        public static string ChannelMessages(string channel)
         {
-            return $"{DiscordEndpoints.API}/channels/{channel}/messages/{message}/reactions/{emoji}/{user}";
+            return $"{DiscordAPI.Channel(channel)}/messages";
+        }
+
+        public static string MessageReactions(string channel, string message)
+        {
+            return $"{DiscordAPI.ChannelMessages(channel)}/{message}/reactions";
+        }
+
+        public static string MessageReaction(string channel, string message, string emoji, string user = "@me")
+        {
+            return $"{DiscordAPI.MessageReactions(channel, message)}/{emoji}/{user}";
         }
 
         public static string Message(string channel, string message)
         {
-            return $"{DiscordEndpoints.API}/channels/{channel}/messages/{message}";
+            return $"{DiscordAPI.ChannelMessages(channel)}/{message}";
         }
     }
 }

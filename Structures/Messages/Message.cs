@@ -2,61 +2,13 @@ using DNet.Builders;
 using DNet.Core;
 using DNet.Structures.Channels;
 using DNet.Structures.Guilds;
+using DNet.Structures.Messages;
 using Newtonsoft.Json;
-using System;
 using System.Threading.Tasks;
 
 namespace DNet.Structures
 {
-    public enum MessageType
-    {
-        Default,
-        RecipientAdd,
-        RecipientRemove,
-        Call,
-        ChannelNameChange,
-        ChannelIconChange,
-        ChannelPinnedMessage,
-        GuildMemberJoin
-    }
-
-    public struct MessageReaction
-    {
-        [JsonProperty("count")]
-        public int Count { get; set; }
-
-        [JsonProperty("me")]
-        public bool Me { get; set; }
-
-        [JsonProperty("emoji")]
-        public Emoji Emoji { get; set; }
-    }
-
-    public struct MessageAttachment
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("filename")]
-        public string Filename { get; set; }
-
-        [JsonProperty("size")]
-        public int Size { get; set; }
-
-        [JsonProperty("url")]
-        public string Url { get; set; }
-
-        [JsonProperty("proxy_url")]
-        public string ProxyUrl { get; set; }
-
-        [JsonProperty("height")]
-        public int? Height { get; set; }
-
-        [JsonProperty("width")]
-        public int? Width { get; set; }
-    }
-
-    public class Message
+    public class Message : ClientInjectable
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -123,11 +75,6 @@ namespace DNet.Structures
         [JsonProperty("application")]
         public MessageApplication? Application { get; set; }
 
-        // Source
-        // TODO: Should be set by reference?
-        [JsonIgnore]
-        public Client Client { get; set; }
-
         // Resolvables
         public Guild? Guild => this.Client.guilds[this.GuildId];
 
@@ -163,40 +110,5 @@ namespace DNet.Structures
         {
             return this.Edit(richEmbed.Build());
         }
-    }
-
-    public struct MessageActivity
-    {
-        [JsonProperty("type")]
-        public MessageActivityType Type { get; set; }
-
-        [JsonProperty("party_id")]
-        public string PartyId { get; set; }
-    }
-
-    public enum MessageActivityType
-    {
-        Join = 1,
-        Spectate,
-        Listen,
-        JoinRequest
-    }
-
-    public struct MessageApplication
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("cover_image")]
-        public string CoverImageId { get; set; }
-
-        [JsonProperty("description")]
-        public string Description { get; set; }
-
-        [JsonProperty("icon")]
-        public string IconId { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
     }
 }

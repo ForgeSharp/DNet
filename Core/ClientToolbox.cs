@@ -1,5 +1,6 @@
 ﻿using DNet.Http;
 using DNet.Structures;
+using DNet.Structures.Channels;
 using DNet.Web;
 using Newtonsoft.Json;
 using System;
@@ -34,7 +35,7 @@ namespace DNet.Core
         /// <param name="content">The message's content</param>
         public async Task<Message> CreateMessage(string channelId, string content)
         {
-            var response = await ClientToolbox.PostAsync(DiscordAPI.CreateMessage(channelId, content), new Dictionary<string, string>() {
+            var response = await ClientToolbox.PostAsync(DiscordAPI.ChannelMessages(channelId), new Dictionary<string, string>() {
                 {"content", content}
             });
 
@@ -94,21 +95,21 @@ namespace DNet.Core
 
         public static async Task<bool> CreateReaction(string channelId, string messageId, SimpleEmoji emoji)
         {
-            var response = await ClientToolbox.PostAsync(DiscordAPI.Reaction(channelId, messageId, emoji.ToString()));
+            var response = await ClientToolbox.PostAsync(DiscordAPI.MessageReaction(channelId, messageId, emoji.ToString()));
 
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
 
         public static async Task<bool> DeleteOwnReaction(string channelId, string messageId, SimpleEmoji emoji)
         {
-            var response = await ClientToolbox.DeleteAsync(DiscordAPI.Reaction(channelId, messageId, emoji.ToString()));
+            var response = await ClientToolbox.DeleteAsync(DiscordAPI.MessageReaction(channelId, messageId, emoji.ToString()));
 
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
 
         public static async Task<bool> DeleteUserReaction(string channelId, string messageId, SimpleEmoji emoji, string userId)
         {
-            var response = await ClientToolbox.DeleteAsync(DiscordAPI.Reaction(channelId, messageId, emoji.ToString(), userId));
+            var response = await ClientToolbox.DeleteAsync(DiscordAPI.MessageReaction(channelId, messageId, emoji.ToString(), userId));
 
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
@@ -118,6 +119,26 @@ namespace DNet.Core
             var response = await ClientToolbox.DeleteAsync(DiscordAPI.Message(channelId, messageId));
 
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
+        }
+
+        public async Task<ChannelType>GetChannel<ChannelType>(string channelId) where ChannelType : Channel
+        {
+            // TODO: Need to inject client
+            return ClientToolbox.FetchStructure(DiscordAPI.Channel(channelId))
+        }
+
+        public static async Task<StructureType>FetchStructure<StructureType>(string url, Dictionary<string, string> values = null)
+        {
+            var response = await ClientToolbox.GetAsync(url, values);
+
+            if (response.IsSuccessStatusCode)
+            {
+                StructureType result = JsonConvert.DeserializeObject<StructureType>(await response.Content.ReadAsStringAsync());
+
+                return result;
+            }
+
+            return default(StructureType);
         }
 
         public static void Request<ResponseType>(string url, HttpMethod method)
