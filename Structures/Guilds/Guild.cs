@@ -91,7 +91,7 @@ namespace DNet.Structures.Guilds
         // TODO: Not added: voice_states (see at https://discordapp.com/developers/docs/resources/guild#guild-object)
 
         [JsonProperty("channels")]
-        public Channel?[] Channels { get; set; }
+        public Channel[] Channels { get; set; }
 
         [JsonProperty("presences")]
         public PresenceUpdateEvent?[] Presences { get; set; }

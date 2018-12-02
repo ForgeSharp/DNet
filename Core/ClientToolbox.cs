@@ -22,7 +22,7 @@ namespace DNet.Core
 
         private Message InjectClient(ref Message message)
         {
-            message.Client = this.client;
+            message.SetClient(this.client);
 
             return message;
         }
@@ -121,15 +121,15 @@ namespace DNet.Core
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
 
-        public async Task<ChannelType>GetChannel<ChannelType>(string channelId) where ChannelType : Channel
+        public Task<ChannelType>GetChannel<ChannelType>(string channelId) where ChannelType : Channel
         {
             // TODO: Need to inject client
-            return ClientToolbox.FetchStructure(DiscordAPI.Channel(channelId))
+            return ClientToolbox.FetchStructure<ChannelType>(DiscordAPI.Channel(channelId));
         }
 
-        public static async Task<StructureType>FetchStructure<StructureType>(string url, Dictionary<string, string> values = null)
+        public static async Task<StructureType>FetchStructure<StructureType>(string url)
         {
-            var response = await ClientToolbox.GetAsync(url, values);
+            var response = await ClientToolbox.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {

@@ -1,6 +1,7 @@
 using DNet.Core;
 using DNet.Structures;
 using DNet.Structures.Guilds;
+using DNet.Structures.Users;
 using Newtonsoft.Json;
 
 namespace DNet.Http.Gateway
