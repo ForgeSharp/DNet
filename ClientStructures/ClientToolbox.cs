@@ -20,11 +20,9 @@ namespace DNet.ClientStructures
             this.client = client;
         }
 
-        private Message InjectClient(ref Message message)
+        private InjectableType InjectClient<InjectableType>(ref InjectableType injectable) where InjectableType : ClientInjectable
         {
-            message.SetClient(this.client);
-
-            return message;
+            return this.client.Inject(ref injectable);
         }
 
         // TODO: Return the message
@@ -41,7 +39,7 @@ namespace DNet.ClientStructures
 
             if (response.IsSuccessStatusCode)
             {
-                Message message = JsonConvert.DeserializeObject<Message>(await response.Content.ReadAsStringAsync());
+                Message message = this.client.CreateStructure<Message>(await response.Content.ReadAsStringAsync());
 
                 // TODO: Should be by reference, Client object may be large
                 // Inject client
@@ -79,11 +77,9 @@ namespace DNet.ClientStructures
 
             var response = await ClientToolbox.PatchAsync(DiscordAPI.Message(channelId, messageId), body);
 
-            Console.WriteLine("Response: {0}", await response.Content.ReadAsStringAsync());
-
             if (response != null && response.IsSuccessStatusCode)
             {
-                Message message = JsonConvert.DeserializeObject<Message>(await response.Content.ReadAsStringAsync());
+                Message message = this.client.CreateStructure<Message>(await response.Content.ReadAsStringAsync());
 
                 // TODO: Should be by reference, Client object may be large
                 // Inject client
@@ -134,6 +130,20 @@ namespace DNet.ClientStructures
             if (response.IsSuccessStatusCode)
             {
                 StructureType result = JsonConvert.DeserializeObject<StructureType>(await response.Content.ReadAsStringAsync());
+
+                return result;
+            }
+
+            return default(StructureType);
+        }
+
+        public async Task<StructureType>FetchInjectableStructure<StructureType>(string url) where StructureType : ClientInjectable
+        {
+            var response = await ClientToolbox.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                StructureType result = this.client.CreateStructure<StructureType>(await response.Content.ReadAsStringAsync());
 
                 return result;
             }

@@ -200,7 +200,7 @@ namespace DNet.Socket
                             case "MESSAGE_CREATE":
                                 {
                                     // Fire event
-                                    this.OnMessageCreate?.Invoke(this, this.ConvertMessage<Structures.Message>(message));
+                                    this.OnMessageCreate?.Invoke(this, this.client.CreateStructure(this.ConvertMessage<Structures.Message>(message)));
 
                                     break;
                                 }
@@ -208,6 +208,7 @@ namespace DNet.Socket
                             case "MESSAGE_DELETE":
                                 {
                                     // Fire event
+                                    // TODO: Send message instead of event
                                     this.OnMessageDelete?.Invoke(this, this.ConvertMessage<MessageDeleteEvent>(message));
 
                                     break;
@@ -217,7 +218,7 @@ namespace DNet.Socket
                             case "GUILD_CREATE":
                                 {
                                     // Fire event
-                                    this.OnGuildCreate?.Invoke(this, this.ConvertMessage<Guild>(message));
+                                    this.OnGuildCreate?.Invoke(this, this.client.CreateStructure(this.ConvertMessage<Guild>(message)));
 
                                     break;
                                 }
@@ -225,7 +226,7 @@ namespace DNet.Socket
                             case "GUILD_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnGuildUpdate?.Invoke(this, this.ConvertMessage<Guild>(message));
+                                    this.OnGuildUpdate?.Invoke(this, this.client.CreateStructure(this.ConvertMessage<Guild>(message)));
 
                                     break;
                                 }

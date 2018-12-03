@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DNet.Core;
 using DNet.Socket;
 using DNet.Structures;
 using DNet.Structures.Guilds;
 using DNet.Web;
+using Newtonsoft.Json;
 
 namespace DNet.ClientStructures
 {
@@ -38,6 +38,22 @@ namespace DNet.ClientStructures
             this.guilds = new Dictionary<string, Guild>();
             this.users = new Dictionary<string, User>(); ;
             this.toolbox = new ClientToolbox(this);
+        }
+
+        public InjectableType Inject<InjectableType>(ref InjectableType injectable) where InjectableType : ClientInjectable
+        {
+            injectable.SetClient(this);
+
+            return injectable;
+        }
+
+        public StructureType CreateStructure<StructureType>(StructureType structure) where StructureType : ClientInjectable {
+            return this.Inject(ref structure);
+        }
+
+        public StructureType CreateStructure<StructureType>(string structure) where StructureType : ClientInjectable
+        {
+            return this.CreateStructure<StructureType>(JsonConvert.DeserializeObject<StructureType>(structure));
         }
 
         // TODO: Check if already connected, if so, disconnect THEN connect new session

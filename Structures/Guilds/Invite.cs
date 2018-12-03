@@ -10,7 +10,7 @@ namespace DNet.Structures.Guilds
 
         // TODO: Guild is partial
         [JsonProperty("guild")]
-        public Guild? Guild { get; set; }
+        public Guild Guild { get; set; }
 
         // TODO: Channel is partial
         [JsonProperty("channel")]

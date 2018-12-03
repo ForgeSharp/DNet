@@ -48,7 +48,7 @@ namespace DNet.Structures
 
         [JsonProperty("mention_roles")]
         public MessageReaction[] MentionedRoles { get; set; }
-        
+
         [JsonProperty("attachments")]
         public MessageAttachment[] Attachments { get; set; }
 
@@ -76,15 +76,35 @@ namespace DNet.Structures
         [JsonProperty("application")]
         public MessageApplication? Application { get; set; }
 
-        // Resolvables
-        public Guild? Guild => this.Client.guilds[this.GuildId];
+        public Guild Guild
+        {
+            get
+            {
+                if (this.Client == null)
+                {
+                    return null;
+                }
 
-        // TODO
-        //public bool Editable => this.Client.User.Id == this.Author.Id;
+                return this.Client.guilds[this.GuildId];
+            }
+        }
+
+        public bool? Editable
+        {
+            get
+            {
+                if (this.Client == null || !this.Client.User.HasValue)
+                {
+                    return null;
+                }
+
+                return this.Client.User.Value.Id == this.Author.Id;
+            }
+        }
 
         public Task<Message> Edit(MessageEdit edit)
         {
-            if (this.Client == null)
+            if (this.Client == null || this.Editable == null || this.Editable == false)
             {
                 return null;
             }
@@ -94,7 +114,8 @@ namespace DNet.Structures
 
         public Task<Message> Edit(string content)
         {
-            return this.Edit(new MessageEdit() {
+            return this.Edit(new MessageEdit()
+            {
                 Content = content
             });
         }
