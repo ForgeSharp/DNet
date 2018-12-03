@@ -17,6 +17,7 @@ namespace DNet.ClientStructures
     {
         // TODO
         public User? User { get; set; }
+        
         private string SessionId;
 
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(DiscordEndpoints.CDN);
