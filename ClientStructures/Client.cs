@@ -16,7 +16,9 @@ namespace DNet.ClientStructures
     public class Client : IDisposable
     {
         // TODO
-        public User? User { get; private set; }
+        public User? User { get; set; }
+        
+        private string SessionId;
 
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(DiscordEndpoints.CDN);
         public static readonly HttpClient httpClient = new HttpClient();
@@ -88,6 +90,11 @@ namespace DNet.ClientStructures
         {
             this.users.Clear();
             this.guilds.Clear();
+        }
+
+        public void SetSessionId(string sessionid)
+        {
+            this.SessionId = sessionid;
         }
     }
 }

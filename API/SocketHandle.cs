@@ -20,7 +20,7 @@ namespace DNet.Socket
         // TODO
         // Discord Events
         public event EventHandler OnRateLimit;
-        public event EventHandler OnReady;
+        public event EventHandler<ReadyEvent> OnReady;
         public event EventHandler OnResumed;
         public event EventHandler<Guild> OnGuildCreate;
         public event EventHandler<Guild> OnGuildUpdate;
@@ -54,6 +54,12 @@ namespace DNet.Socket
 
         private void SetupInternalHandlers()
         {
+            this.OnReady += (object sender, ReadyEvent ready) =>
+            {
+                this.client.User = ready.User;
+                this.client.SetSessionId(ready.SessionId);
+            };
+            
             this.OnGuildCreate += (object sender, Guild guild) =>
             {
                 // TODO: Hanging up on .Id access!
@@ -180,7 +186,7 @@ namespace DNet.Socket
 
                         break;
                     }
-
+                    
                 case OpCode.Dispatch:
                     {
                         Console.WriteLine($" => '{message.Type}'");
@@ -191,8 +197,8 @@ namespace DNet.Socket
                             case "READY":
                                 {
                                     // Fire event
-                                    this.OnReady?.Invoke(this, null);
-
+//                                    this.OnReady?.Invoke(this, null);
+                                    this.OnReady?.Invoke(this,this.ConvertMessage<ReadyEvent>(message));
                                     break;
                                 }
 
@@ -292,5 +298,20 @@ namespace DNet.Socket
             this.socket.Send(serializedMessage);
             Console.WriteLine($"WS Sent => {serializedMessage}");
         }
+    }
+
+    public class ReadyEvent : EventArgs
+    {
+        [JsonProperty("v")]
+        public int GatewayVersion { get; set; }
+        
+        [JsonProperty("user")]
+        public User User { get; set; }
+        
+        [JsonProperty("guilds")]
+        public UnavailableGuild[] Guilds { get; set; }
+        
+        [JsonProperty("session_id")]
+        public string SessionId { get; set; }
     }
 }
