@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace DNet.Core
+namespace DNet.ClientStructures
 {
     public class ClientInjectable
     {

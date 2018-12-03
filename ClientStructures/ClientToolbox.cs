@@ -1,4 +1,5 @@
-﻿using DNet.Http;
+﻿using DNet.Core;
+using DNet.Http;
 using DNet.Structures;
 using DNet.Structures.Channels;
 using Newtonsoft.Json;
@@ -8,7 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DNet.Core
+namespace DNet.ClientStructures
 {
     public class ClientToolbox
     {

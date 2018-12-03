@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DNet.ClientStructures;
+using Newtonsoft.Json;
 
 namespace DNet.Structures.Channels
 {

@@ -8,7 +8,7 @@ using DNet.Structures;
 using DNet.Structures.Guilds;
 using DNet.Web;
 
-namespace DNet
+namespace DNet.ClientStructures
 {
     // Discord Event Handler Delegates
     public delegate void MessageCreateHandler(dynamic message);

@@ -1,7 +1,7 @@
 ﻿using DNet.Socket;
 using System.Threading.Tasks;
 
-namespace DNet.Core
+namespace DNet.ClientStructures
 {
     public class ClientManager
     {

@@ -1,4 +1,5 @@
 using DNet.Builders;
+using DNet.ClientStructures;
 using DNet.Core;
 using DNet.Structures.Channels;
 using DNet.Structures.Guilds;

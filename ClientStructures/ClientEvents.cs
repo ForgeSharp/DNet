@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DNet.Core
+namespace DNet.ClientStructures
 {
     public enum ClientEvents
     {

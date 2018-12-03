@@ -1,3 +1,4 @@
+using DNet.ClientStructures;
 using DNet.Core;
 using Newtonsoft.Json;
 
