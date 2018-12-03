@@ -186,8 +186,7 @@ namespace DNet.Socket
 
                         break;
                     }
-                
-                
+                    
                 case OpCode.Dispatch:
                     {
                         Console.WriteLine($" => '{message.Type}'");
