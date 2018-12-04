@@ -2,36 +2,7 @@ using DNet.ClientStructures;
 using DNet.Core;
 using Newtonsoft.Json;
 
-namespace DNet.ClientMessages {
-    public struct ClientHeartbeatMessage {
-        [JsonProperty("op")]
-        public readonly int opCode;
-        
-        public readonly int? d;
-
-        public ClientHeartbeatMessage(int opCode, int? d) {
-            this.opCode = opCode;
-            this.d = d;
-        }
-    }
-
-    public struct ClientIdentifyMessageProperties {
-        [JsonProperty("$os")]
-        public readonly string os;
-
-        [JsonProperty("$browser")]
-        public readonly string browser;
-
-        [JsonProperty("$device")]
-        public readonly string device;
-
-        public ClientIdentifyMessageProperties(string os, string browser, string device) {
-            this.os = os;
-            this.browser = browser;
-            this.device = device;
-        }
-    }
-
+namespace DNet.API.Client {
     public struct ClientIdentifyMessage {
         public readonly string token;
         public readonly ClientIdentifyMessageProperties properties;
