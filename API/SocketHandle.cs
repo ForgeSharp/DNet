@@ -1,6 +1,7 @@
 using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using DNet.API.Gateway;
 using DNet.ClientMessages;
 using DNet.ClientStructures;
 using DNet.Core;
@@ -8,9 +9,9 @@ using DNet.Http;
 using DNet.Http.Gateway;
 using DNet.Structures;
 using DNet.Structures.Guilds;
-using DNet.Structures.Guilds;
 using DNet.Web;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PureWebSockets;
 
 namespace DNet.Socket
@@ -37,9 +38,17 @@ namespace DNet.Socket
         // ...
         public event EventHandler<Structures.Message> OnMessageCreate;
         public event EventHandler<MessageDeleteEvent> OnMessageDelete;
-        public event EventHandler OnMessageUpdate;
+        public event EventHandler<MessageDeleteBulkEvent> OnMessageDeleteBulk;
+        public event EventHandler<Structures.Message> OnMessageUpdate;
+        public event EventHandler<MessageReactionEvent> OnMessageReactionAdd;
+        public event EventHandler<MessageReactionEvent> OnMessageReactionRemove;
+        public event EventHandler<MessageReactionRemoveAllEvent> OnMessageReactionRemoveAll;
         // ...
         public event EventHandler<PresenceUpdateEvent> OnPresenceUpdate;
+
+        public event EventHandler<TypingStartEvent> OnTypingStart;
+
+        public event EventHandler<UserUpdateEvent> OnUserUpdate;
 
         private readonly Client client;
 
@@ -59,7 +68,7 @@ namespace DNet.Socket
                 this.client.User = ready.User;
                 this.client.SetSessionId(ready.SessionId);
             };
-            
+
             this.OnGuildCreate += (object sender, Guild guild) =>
             {
                 // TODO: Hanging up on .Id access!
@@ -95,6 +104,10 @@ namespace DNet.Socket
                     this.client.users.Add(update.User.Id, update.User);
                     // TODO: Also save presence
                 }
+            };
+
+            this.OnUserUpdate += (object sender, UserUpdateEvent e) => {
+                this.client.users.Add(e.UpdatedUser.Id, e.UpdatedUser);
             };
 
             // TODO
@@ -137,7 +150,7 @@ namespace DNet.Socket
             // TODO: Debugging
             // Console.WriteLine($"WS Received => {messageString}");
 
-            GatewayMessage<dynamic> message = JsonConvert.DeserializeObject<GatewayMessage<dynamic>>(messageString);
+            GatewayMessage<JObject> message = JsonConvert.DeserializeObject<GatewayMessage<JObject>>(messageString);
 
             Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
 
@@ -145,7 +158,7 @@ namespace DNet.Socket
             {
                 case OpCode.Hello:
                     {
-                        GatewayHelloMessage helloMessage = (GatewayHelloMessage)JsonConvert.DeserializeObject<GatewayHelloMessage>(JsonConvert.SerializeObject(message.Data));
+                        GatewayHelloMessage helloMessage = this.ConvertMessage<GatewayHelloMessage>(message);
 
                         Console.WriteLine($"WS Acknowledged heartbeat at {helloMessage.heartbeatInterval}ms interval");
 
@@ -186,7 +199,7 @@ namespace DNet.Socket
 
                         break;
                     }
-                    
+
                 case OpCode.Dispatch:
                     {
                         Console.WriteLine($" => '{message.Type}'");
@@ -197,8 +210,8 @@ namespace DNet.Socket
                             case "READY":
                                 {
                                     // Fire event
-//                                    this.OnReady?.Invoke(this, null);
-                                    this.OnReady?.Invoke(this,this.ConvertMessage<ReadyEvent>(message));
+                                    //                                    this.OnReady?.Invoke(this, null);
+                                    this.OnReady?.Invoke(this, this.ConvertMessage<ReadyEvent>(message));
                                     break;
                                 }
 
@@ -206,7 +219,16 @@ namespace DNet.Socket
                             case "MESSAGE_CREATE":
                                 {
                                     // Fire event
-                                    this.OnMessageCreate?.Invoke(this, this.client.CreateStructure(this.ConvertMessage<Structures.Message>(message)));
+                                    this.OnMessageCreate?.Invoke(this, this.ConvertInjectableMessage<Structures.Message>(message));
+
+                                    break;
+                                }
+
+                            case "MESSAGE_UPDATE":
+                                {
+                                    // Fire event
+                                    // TODO: Message is partial, see (https://discordapp.com/developers/docs/topics/gateway#message-update)
+                                    this.OnMessageUpdate?.Invoke(this, this.ConvertInjectableMessage<Structures.Message>(message));
 
                                     break;
                                 }
@@ -214,8 +236,40 @@ namespace DNet.Socket
                             case "MESSAGE_DELETE":
                                 {
                                     // Fire event
-                                    // TODO: Send message instead of event
+                                    // TODO: Send message instead of event??
                                     this.OnMessageDelete?.Invoke(this, this.ConvertMessage<MessageDeleteEvent>(message));
+
+                                    break;
+                                }
+
+                            case "MESSAGE_DELETE_BULK":
+                                {
+                                    // Fire event
+                                    this.OnMessageDeleteBulk?.Invoke(this, this.ConvertMessage<MessageDeleteBulkEvent>(message));
+
+                                    break;
+                                }
+
+                            case "MESSAGE_REACTION_ADD":
+                                {
+                                    // Fire event
+                                    this.OnMessageReactionAdd?.Invoke(this, this.ConvertMessage<MessageReactionEvent>(message));
+
+                                    break;
+                                }
+
+                            case "MESSAGE_REACTION_REMOVE":
+                                {
+                                    // Fire event
+                                    this.OnMessageReactionRemove?.Invoke(this, this.ConvertMessage<MessageReactionEvent>(message));
+
+                                    break;
+                                }
+
+                            case "MESSAGE_REACTION_REMOVE_ALL":
+                                {
+                                    // Fire event
+                                    this.OnMessageReactionRemoveAll?.Invoke(this, this.ConvertMessage<MessageReactionRemoveAllEvent>(message));
 
                                     break;
                                 }
@@ -224,7 +278,7 @@ namespace DNet.Socket
                             case "GUILD_CREATE":
                                 {
                                     // Fire event
-                                    this.OnGuildCreate?.Invoke(this, this.client.CreateStructure(this.ConvertMessage<Guild>(message)));
+                                    this.OnGuildCreate?.Invoke(this, this.ConvertInjectableMessage<Guild>(message));
 
                                     break;
                                 }
@@ -232,7 +286,7 @@ namespace DNet.Socket
                             case "GUILD_UPDATE":
                                 {
                                     // Fire event
-                                    this.OnGuildUpdate?.Invoke(this, this.client.CreateStructure(this.ConvertMessage<Guild>(message)));
+                                    this.OnGuildUpdate?.Invoke(this, this.ConvertInjectableMessage<Guild>(message));
 
                                     break;
                                 }
@@ -250,6 +304,32 @@ namespace DNet.Socket
                                 {
                                     // Fire event
                                     this.OnPresenceUpdate?.Invoke(this, this.ConvertMessage<PresenceUpdateEvent>(message));
+
+                                    break;
+                                }
+
+                            case "TYPING_START":
+                                {
+                                    // Fire event
+                                    this.OnTypingStart?.Invoke(this, this.ConvertMessage<TypingStartEvent>(message));
+
+                                    break;
+                                }
+
+                            case "USER_UPDATE":
+                                {
+                                    User updatedUser = this.ConvertMessage<User>(message);
+                                    User? oldUser = null;
+
+                                    if (this.client.users.ContainsKey(updatedUser.Id))
+                                    {
+                                        oldUser = this.client.users[updatedUser.Id];
+                                    }
+
+                                    this.OnUserUpdate?.Invoke(this, new UserUpdateEvent() {
+                                        OldUser = oldUser,
+                                        UpdatedUser = updatedUser
+                                    });
 
                                     break;
                                 }
@@ -274,10 +354,14 @@ namespace DNet.Socket
             }
         }
 
-        // TODO: This is required or will hang up (stop), because it JSON cannot serialize by JsonProperties attributes into dynamic, it has no way of knowing..
-        private DataType ConvertMessage<DataType>(GatewayMessage<dynamic> message)
+        private DataType ConvertInjectableMessage<DataType>(GatewayMessage<JObject> message) where DataType : ClientInjectable
         {
-            return JsonConvert.DeserializeObject<DataType>(JsonConvert.SerializeObject(message.Data));
+            return this.client.CreateStructure<DataType>(this.ConvertMessage<DataType>(message));
+        }
+
+        private DataType ConvertMessage<DataType>(GatewayMessage<JObject> message)
+        {
+            return message.Data.ToObject<DataType>();
         }
 
         private void WS_OnClosed(WebSocketCloseStatus reason)
@@ -298,20 +382,5 @@ namespace DNet.Socket
             this.socket.Send(serializedMessage);
             Console.WriteLine($"WS Sent => {serializedMessage}");
         }
-    }
-
-    public class ReadyEvent : EventArgs
-    {
-        [JsonProperty("v")]
-        public int GatewayVersion { get; set; }
-        
-        [JsonProperty("user")]
-        public User User { get; set; }
-        
-        [JsonProperty("guilds")]
-        public UnavailableGuild[] Guilds { get; set; }
-        
-        [JsonProperty("session_id")]
-        public string SessionId { get; set; }
     }
 }

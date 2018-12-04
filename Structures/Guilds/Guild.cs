@@ -1,5 +1,5 @@
+using DNet.API.Gateway;
 using DNet.ClientStructures;
-using DNet.Http.Gateway;
 using DNet.Structures.Channels;
 using Newtonsoft.Json;
 

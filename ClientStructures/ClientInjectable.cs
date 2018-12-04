@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 
 namespace DNet.ClientStructures
 {
@@ -9,15 +8,12 @@ namespace DNet.ClientStructures
         [JsonIgnore]
         protected Client Client { get; set; }
 
+        // TODO: Getting called twice, check the ping command (on edit?)
         public void SetClient(Client client)
         {
             if (this.Client == null)
             {
                 this.Client = client;
-            }
-            else
-            {
-                throw new Exception("Client was already set");
             }
         }
     }
