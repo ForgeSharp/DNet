@@ -121,6 +121,14 @@ namespace DNet.ClientStructures
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
 
+        public static async Task<bool> DeleteGuildEmoji(string guildId, string emojiId)
+        {
+            // TODO: DiscordAPI.Emoji
+            var response = await ClientToolbox.DeleteAsync(DiscordAPI.Message(channelId, messageId));
+
+            return response.StatusCode == System.Net.HttpStatusCode.NoContent;
+        }
+
         public Task<ChannelType>GetChannel<ChannelType>(string channelId) where ChannelType : Channel
         {
             // TODO: Need to inject client
