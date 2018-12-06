@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DNet.Socket;
+using DNet.API;
 using DNet.Structures;
 using DNet.Structures.Guilds;
 using DNet.Web;
