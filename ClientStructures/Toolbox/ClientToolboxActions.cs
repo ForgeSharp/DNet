@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DNet.ClientStructures.Toolbox
 {
-    public partial class OldClientToolbox
+    public partial class ClientToolbox
     {
         // TODO: Return the message
         /// <summary>

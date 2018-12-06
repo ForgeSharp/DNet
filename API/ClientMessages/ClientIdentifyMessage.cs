@@ -1,8 +1,8 @@
 using DNet.ClientStructures;
-using DNet.Core;
 using Newtonsoft.Json;
 
-namespace DNet.API.Client {
+namespace DNet.API.ClientMessages
+{
     public struct ClientIdentifyMessage {
         public readonly string token;
         public readonly ClientIdentifyMessageProperties properties;

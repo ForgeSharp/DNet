@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 
-namespace DNet.API.Client {
+namespace DNet.API.ClientMessages
+{
     // TODO
     public struct ClientHeartbeatMessage {
         [JsonProperty("op")]

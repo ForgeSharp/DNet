@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace DNet.API.Client {
+namespace DNet.API.ClientMessages {
     public struct ClientIdentifyMessageProperties {
         [JsonProperty("$os")]
         public readonly string os;

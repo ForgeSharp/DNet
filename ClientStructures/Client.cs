@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DNet.API;
+using DNet.ClientStructures.Toolbox;
 using DNet.Structures;
 using DNet.Structures.Guilds;
 using DNet.Web;

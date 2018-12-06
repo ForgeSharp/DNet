@@ -1,4 +1,4 @@
-﻿using DNet.Socket;
+﻿using DNet.API;
 using System.Threading.Tasks;
 
 namespace DNet.ClientStructures

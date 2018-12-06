@@ -1,8 +1,8 @@
 using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using DNet.API.ClientMessages;
 using DNet.API.Gateway;
-using DNet.ClientMessages;
 using DNet.ClientStructures;
 using DNet.Core;
 using DNet.Http;

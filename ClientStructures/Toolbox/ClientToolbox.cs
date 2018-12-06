@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DNet.ClientStructures.Toolbox
 {
-    public partial class OldClientToolbox
+    public partial class ClientToolbox
     {
         public delegate void ActionCallback<ResultType>(ResultType result);
 
@@ -19,7 +20,7 @@ namespace DNet.ClientStructures.Toolbox
 
         private uint requests;
 
-        public OldClientToolbox(Client client)
+        public ClientToolbox(Client client)
         {
             this.client = client;
             this.queue = new Queue<ToolboxAction>();
@@ -31,9 +32,9 @@ namespace DNet.ClientStructures.Toolbox
         {
             while (this.queue.Count > 0)
             {
-                if (this.requests >= (OldClientToolbox.maxRequests - OldClientToolbox.safetyMargin))
+                if (this.requests >= (ClientToolbox.maxRequests - ClientToolbox.safetyMargin))
                 {
-                    Task.Delay((int)OldClientToolbox.resetTimeInSeconds);
+                    Task.Delay((int)ClientToolbox.resetTimeInSeconds);
                     this.requests = 0;
                 }
 
@@ -88,9 +89,10 @@ namespace DNet.ClientStructures.Toolbox
             return default(StructureType);
         }
 
-        public static void Request<ResponseType>(string url, HttpMethod method)
+        public static ResponseType Request<ResponseType>(string url, HttpMethod method)
         {
             // TODO:
+            throw new NotImplementedException();
         }
         
         /// <summary>
