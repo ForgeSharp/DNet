@@ -39,9 +39,6 @@ namespace DNet.API
 
             this.OnGuildCreate += (object sender, Guild guild) =>
             {
-                // TODO: Hanging up on .Id access!
-                Console.WriteLine($"Guild id is {guild.Id} and name {guild.Name}");
-
                 // Update local guild cache
                 this.client.guilds.Add(guild.Id, guild);
             };
@@ -93,8 +90,6 @@ namespace DNet.API
 
         public async Task Connect()
         {
-            Console.WriteLine($"Authenticating using token '{this.client.GetToken()}'");
-
             // TODO: Use response
             var response = await Fetch.GetJsonAsyncAuthorized<GetGatewayBotResponse>(DiscordAPI.BotGateway(), this.client.GetToken());
             var convertedResponse = JsonConvert.SerializeObject(response);
@@ -115,9 +110,6 @@ namespace DNet.API
 
         private void WS_OnMessage(string messageString)
         {
-            // TODO: Debugging
-            // Console.WriteLine($"WS Received => {messageString}");
-
             GatewayMessage<JObject> message = JsonConvert.DeserializeObject<GatewayMessage<JObject>>(messageString);
 
             Console.WriteLine($"WS Handling message with OPCODE '{message.OpCode}'");
