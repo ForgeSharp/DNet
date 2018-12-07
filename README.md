@@ -1,6 +1,6 @@
 ﻿#### DNet
 
-DNet is a .NET API wrapper for Discord. It is not based upon any other library, it is completely built from scratch.
+DNet is a .NET API wrapper for Discord. It is not based upon any other library, as is completely built from scratch.
 
 #### Usage
 
