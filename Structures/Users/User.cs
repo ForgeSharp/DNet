@@ -37,5 +37,8 @@ namespace DNet.Structures
 
         [JsonProperty("premium_type")]
         public NitroSubscription? Subscription { get; set; }
+
+        [JsonIgnore]
+        public string Tag => $"{this.Username}{this.Discriminator}";
     }
 }

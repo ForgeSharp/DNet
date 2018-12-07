@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DNet.ClientStructures
 {
-    public enum ClientStatus
+    public enum ClientState
     {
         Ready,
         Connecting,
