@@ -9,6 +9,7 @@ Basic example
 ```cs
 using System.Threading.Tasks;
 using DNet.ClientStructures;
+using DNet.API.Gateway;
 
 public static class Program {
     public static async Task Main() {
