@@ -16,9 +16,9 @@ namespace DNet.ClientStructures
 
     public class Client : IDisposable
     {
-        // TODO
         public User? User { get; set; }
         
+        // TODO
         private string SessionId;
 
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(DiscordEndpoints.CDN);
