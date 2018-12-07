@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 using DNet.ClientStructures;
 using DNet.API.Gateway;
 
-public static class Program {
-    public static async Task Main() {
+public static class Program
+{
+    public static async Task Main()
+    {
         var client = new Client();
 
         await client.Connect("YOUR BOT'S TOKEN HERE");
