@@ -4,23 +4,22 @@ using Newtonsoft.Json;
 namespace DNet.API.ClientMessages
 {
     public struct ClientIdentifyMessage {
-        public readonly string token;
-        public readonly ClientIdentifyMessageProperties properties;
-        public readonly bool compress;
+        [JsonProperty("token")]
+        public string Token { get; set; }
+
+        [JsonProperty("properties")]
+        public ClientIdentifyMessageProperties Properties { get; set; }
+
+        [JsonProperty("compress")]
+        public bool? Compress { get; set; }
 
         [JsonProperty("large_threshold")]
-        public readonly int largeThreshold;
+        public int? LargeThreshold { get; set; }
 
-        public readonly int[] shard;
-        public readonly ClientPresence presence;
+        [JsonProperty("shard")]
+        public int[] Shards { get; set; }
 
-        public ClientIdentifyMessage(string token, ClientIdentifyMessageProperties properties, bool compress, int largeThreshold, int[] shard, ClientPresence presence) {
-            this.token = token;
-            this.properties = properties;
-            this.compress = compress;
-            this.largeThreshold = largeThreshold;
-            this.shard = shard;
-            this.presence = presence;
-        }
+        [JsonProperty("presence")]
+        public ClientPresence Presence { get; set; }
     }
 }

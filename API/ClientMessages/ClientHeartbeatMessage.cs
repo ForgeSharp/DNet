@@ -3,18 +3,12 @@ using Newtonsoft.Json;
 namespace DNet.API.ClientMessages {
     public struct ClientIdentifyMessageProperties {
         [JsonProperty("$os")]
-        public readonly string os;
+        public string OS { get; set; }
 
         [JsonProperty("$browser")]
-        public readonly string browser;
+        public string Browser { get; set; }
 
         [JsonProperty("$device")]
-        public readonly string device;
-
-        public ClientIdentifyMessageProperties(string os, string browser, string device) {
-            this.os = os;
-            this.browser = browser;
-            this.device = device;
-        }
+        public string Device { get; set; }
     }
 }

@@ -95,7 +95,7 @@ namespace DNet.API
             var convertedResponse = JsonConvert.SerializeObject(response);
             var connectionUrl = (string)JsonConvert.DeserializeObject<dynamic>(await Fetch.GetAsync(DiscordAPI.Gateway())).url;
 
-            this.socket = new PureWebSocket(connectionUrl, new PureWebSocketOptions() { });
+            this.socket = new PureWebSocket(connectionUrl, new PureWebSocketOptions { });
 
             // Events
             this.socket.OnMessage += this.WS_OnMessage;
@@ -128,34 +128,21 @@ namespace DNet.API
                             this.Send(OpCode.Heartbeat, new ClientHeartbeatMessage(1, this.heartbeatLastSequence));
                         }, TimeSpan.FromMilliseconds(helloMessage.heartbeatInterval));
 
-                        var dat = new ClientIdentifyMessage(
-                            this.client.GetToken(),
+                        var identity = new ClientIdentifyMessage {
+                            Token = this.client.GetToken(),
 
-                            new ClientIdentifyMessageProperties(
-                                "Linux",
-                                "disco",
-                                "disco"
-                            ),
+                            Properties = new ClientIdentifyMessageProperties
+                            {
+                                Browser = "disco",
+                                Device = "disco",
+                                OS = "linux"
+                            },
 
-                            false,
+                            // { 0 -> the current shard, 1 -> the total amount of shards }
+                            Shards = new int[] { 0, 1 }
+                        };
 
-                            250,
-
-                            // TODO: Hard-coded
-                            new int[] { 0, 1 },
-
-                            // TODO: Also hard-coded
-                            new ClientPresence(
-                                new ClientPresenceGame("Sometg", 0),
-
-                                "dnd",
-
-                                91879201,
-                                false
-                            )
-                        );
-
-                        this.Send(OpCode.Identify, dat);
+                        this.Send(OpCode.Identify, identity);
 
                         break;
                     }
