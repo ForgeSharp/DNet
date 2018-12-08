@@ -16,7 +16,7 @@ using PureWebSockets;
 
 namespace DNet.API
 {
-    public partial class SocketHandle
+    public sealed partial class SocketHandle
     {
         private readonly Client client;
 
@@ -301,14 +301,14 @@ namespace DNet.API
             }
         }
 
-        private DataType ConvertInjectableMessage<DataType>(GatewayMessage<JObject> message) where DataType : ClientInjectable
+        private T ConvertInjectableMessage<T>(GatewayMessage<JObject> message) where T : ClientInjectable, new()
         {
-            return this.client.CreateStructure<DataType>(this.ConvertMessage<DataType>(message));
+            return this.client.CreateStructure<T>(this.ConvertMessage<T>(message));
         }
 
-        private DataType ConvertMessage<DataType>(GatewayMessage<JObject> message)
+        private T ConvertMessage<T>(GatewayMessage<JObject> message) where T : new()
         {
-            return message.Data.ToObject<DataType>();
+            return message.Data.ToObject<T>();
         }
 
         private void WS_OnClosed(WebSocketCloseStatus reason)

@@ -2,12 +2,12 @@
 {
     public static class DiscordEndpoints
     {
-        public static int Version { get; } = 7;
+        public static readonly int Version = 7;
 
-        public static string API { get; } = "https://discordapp.com/api";
+        public static string API = "https://discordapp.com/api";
 
-        public static string CDN { get; } = "https://cdn.discordapp.com";
+        public static readonly string CDN = "https://cdn.discordapp.com";
 
-        public static string Invite { get; } = "https://discord.gg";
+        public static readonly string Invite = "https://discord.gg";
     }
 }

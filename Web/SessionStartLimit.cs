@@ -1,16 +1,16 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DNet.Web
 {
     public struct SessionStartLimit
     {
-        public readonly int total;
-        public readonly int remaining;
+        [JsonProperty("total")]
+        public int Total;
+
+        [JsonProperty("remaining")]
+        public int Remaining;
 
         [JsonProperty("reset_after")]
-        public readonly int resetAfter;
+        public int ResetAfter;
     }
 }

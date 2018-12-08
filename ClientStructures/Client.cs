@@ -14,7 +14,7 @@ namespace DNet.ClientStructures
     // Discord Event Handler Delegates
     public delegate void MessageCreateHandler(dynamic message);
 
-    public class Client : IDisposable
+    public sealed class Client : IDisposable
     {
         public User? User { get; set; }
         

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DNet.Web
+﻿namespace DNet.Web
 {
+    // TODO
     public struct FetchAuthorization
     {
         public readonly string type;

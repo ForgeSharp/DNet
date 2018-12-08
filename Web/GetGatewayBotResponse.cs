@@ -1,16 +1,16 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DNet.Web
 {
     public struct GetGatewayBotResponse
     {
-        public readonly string url;
-        public readonly int shards;
+        [JsonProperty("url")]
+        public string Url { get; set; }
+
+        [JsonProperty("shards")]
+        public int Shards { get; set; }
 
         [JsonProperty("session_start_limit")]
-        public readonly SessionStartLimit sessionStartLimit;
+        public SessionStartLimit SessionStartLimit { get; set; }
     }
 }

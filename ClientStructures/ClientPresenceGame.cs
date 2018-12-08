@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DNet.ClientStructures
+﻿namespace DNet.ClientStructures
 {
     public struct ClientPresenceGame
     {
-        public readonly string name;
-        public readonly int type;
+        public string Name { get; set; }
 
-        public ClientPresenceGame(string name, int type)
-        {
-            this.name = name;
-            this.type = type;
-        }
+        public int Type { get; set; }
     }
 }

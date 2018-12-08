@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace DNet.ClientStructures
 {
-    public class ClientManager
+    public sealed class ClientManager
     {
         public readonly SocketHandle socketHandle;
 

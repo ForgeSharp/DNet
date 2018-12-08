@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DNet.Web
@@ -25,9 +22,9 @@ namespace DNet.Web
             }
         }
 
-        public static async Task<ResponseType> GetJsonAsync<ResponseType>(string uri)
+        public static async Task<T> GetJsonAsync<T>(string uri) where T : new()
         {
-            return JsonConvert.DeserializeObject<ResponseType>(await Fetch.GetAsync(uri));
+            return JsonConvert.DeserializeObject<T>(await Fetch.GetAsync(uri));
         }
 
         public static async Task<string> GetAsyncAuthorized(string url, string token)
@@ -40,9 +37,9 @@ namespace DNet.Web
             }
         }
 
-        public static async Task<ResponseType> GetJsonAsyncAuthorized<ResponseType>(string url, string token)
+        public static async Task<T> GetJsonAsyncAuthorized<T>(string url, string token) where T : new()
         {
-            return JsonConvert.DeserializeObject<ResponseType>(await Fetch.GetAsyncAuthorized(url, token));
+            return JsonConvert.DeserializeObject<T>(await Fetch.GetAsyncAuthorized(url, token));
         }
     }
 }

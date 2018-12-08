@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace DNet.ClientStructures
 {
     public struct ClientPresence
     {
-        public readonly ClientPresenceGame game;
-        public readonly string status;
-        public readonly int since;
-        public readonly bool afk;
+        [JsonProperty("game")]
+        public ClientPresenceGame Game { get; set; }
 
-        public ClientPresence(ClientPresenceGame game, string status, int since, bool afk)
-        {
-            this.game = game;
-            this.status = status;
-            this.since = since;
-            this.afk = afk;
-        }
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("since")]
+        public int Since { get; set; }
+
+        [JsonProperty("afk")]
+        public bool AFK { get; set; }
     }
 }

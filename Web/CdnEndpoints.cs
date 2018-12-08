@@ -4,7 +4,7 @@ using System.Linq;
 namespace DNet.Web
 {
     // TODO: Use direct CdnInfo.api/cdn/invite instead of single root
-    public class CdnEndpoints
+    public sealed class CdnEndpoints
     {
         public static readonly string UserAgent = "DiscordBot (cloudrex.me, 0.0.1) CSharp/7";
         public static readonly int[] AllowedImageSizes = { 16, 32, 64, 128, 256, 512, 1024, 2048 };

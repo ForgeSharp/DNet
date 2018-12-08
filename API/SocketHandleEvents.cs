@@ -4,7 +4,7 @@ using System;
 
 namespace DNet.API
 {
-    public partial class SocketHandle
+    public sealed partial class SocketHandle
     {
         // TODO
         // Discord Events
