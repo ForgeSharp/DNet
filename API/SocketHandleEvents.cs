@@ -1,5 +1,7 @@
 ﻿using DNet.API.Gateway;
+using DNet.Structures.Channels;
 using DNet.Structures.Guilds;
+using DNet.Structures.Messages;
 using System;
 
 namespace DNet.API
@@ -24,10 +26,10 @@ namespace DNet.API
         public event EventHandler OnGuildMembersChunk;
         public event EventHandler OnGuildIntegrationsUpdate;
         // ...
-        public event EventHandler<Structures.Message> OnMessageCreate;
+        public event EventHandler<GenericMessage> OnMessageCreate;
         public event EventHandler<MessageDeleteEvent> OnMessageDelete;
         public event EventHandler<MessageDeleteBulkEvent> OnMessageDeleteBulk;
-        public event EventHandler<Structures.Message> OnMessageUpdate;
+        public event EventHandler<GenericMessage> OnMessageUpdate;
         public event EventHandler<MessageReactionEvent> OnMessageReactionAdd;
         public event EventHandler<MessageReactionEvent> OnMessageReactionRemove;
         public event EventHandler<MessageReactionRemoveAllEvent> OnMessageReactionRemoveAll;
@@ -37,5 +39,7 @@ namespace DNet.API
         public event EventHandler<TypingStartEvent> OnTypingStart;
 
         public event EventHandler<UserUpdateEvent> OnUserUpdate;
+
+        public event EventHandler<Channel> OnChannelCreate;
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DNet.API;
 using DNet.ClientStructures.Toolbox;
 using DNet.Structures;
+using DNet.Structures.Channels;
 using DNet.Structures.Guilds;
 using DNet.Web;
 using Newtonsoft.Json;
@@ -24,6 +25,7 @@ namespace DNet.ClientStructures
         public static readonly CdnEndpoints endpoints = new CdnEndpoints(DiscordEndpoints.CDN);
         public static readonly HttpClient httpClient = new HttpClient();
 
+        public readonly Dictionary<string, Channel> channels;
         public readonly Dictionary<string, Guild> guilds;
         public readonly Dictionary<string, User> users;
         public readonly ClientToolbox toolbox;
@@ -38,12 +40,13 @@ namespace DNet.ClientStructures
         public Client()
         {
             this.manager = new ClientManager(this);
+            this.channels = new Dictionary<string, Channel>();
             this.guilds = new Dictionary<string, Guild>();
             this.users = new Dictionary<string, User>(); ;
             this.toolbox = new ClientToolbox(this);
         }
 
-        public InjectableType Inject<InjectableType>(ref InjectableType injectable) where InjectableType : ClientInjectable
+        public InjectableType InjectByReference<InjectableType>(ref InjectableType injectable) where InjectableType : ClientInjectable
         {
             injectable.SetClient(this);
 
@@ -51,7 +54,7 @@ namespace DNet.ClientStructures
         }
 
         public StructureType CreateStructure<StructureType>(StructureType structure) where StructureType : ClientInjectable {
-            return this.Inject(ref structure);
+            return this.InjectByReference(ref structure);
         }
 
         public StructureType CreateStructure<StructureType>(string structure) where StructureType : ClientInjectable

@@ -2,10 +2,12 @@ using DNet.API.Gateway;
 using DNet.ClientStructures;
 using DNet.Structures.Channels;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace DNet.Structures.Guilds
 {
-    public class Guild : ClientInjectable
+    public sealed class Guild : ClientInjectable
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -91,7 +93,10 @@ namespace DNet.Structures.Guilds
         // TODO: Not added: voice_states (see at https://discordapp.com/developers/docs/resources/guild#guild-object)
 
         [JsonProperty("channels")]
-        public GuildChannel[] Channels { get; set; }
+        public JObject[] UnresolvedChannels { get; set; }
+
+        [JsonIgnore]
+        public Dictionary<string, GuildChannel> Channels { get; set; }
 
         [JsonProperty("presences")]
         public PresenceUpdateEvent?[] Presences { get; set; }

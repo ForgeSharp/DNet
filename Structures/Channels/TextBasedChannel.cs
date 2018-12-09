@@ -1,6 +1,4 @@
-﻿using DNet.ClientStructures;
-using Newtonsoft.Json;
-using System;
+﻿using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace DNet.Structures.Channels

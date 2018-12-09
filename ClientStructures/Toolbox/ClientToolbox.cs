@@ -48,7 +48,7 @@ namespace DNet.ClientStructures.Toolbox
 
         private InjectableType InjectClient<InjectableType>(ref InjectableType injectable) where InjectableType : ClientInjectable
         {
-            return this.client.Inject(ref injectable);
+            return this.client.InjectByReference(ref injectable);
         }
 
         public void Enqueue<ResultType>(ToolboxAction action, ActionCallback<ResultType> callback)

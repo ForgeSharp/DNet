@@ -3,7 +3,7 @@
     public enum ChannelType
     {
         Text,
-        Dm,
+        DM,
         Voice,
         Group,
         Category

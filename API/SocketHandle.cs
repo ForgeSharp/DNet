@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using DNet.API.ClientMessages;
@@ -8,7 +9,9 @@ using DNet.Core;
 using DNet.Http;
 using DNet.Http.Gateway;
 using DNet.Structures;
+using DNet.Structures.Channels;
 using DNet.Structures.Guilds;
+using DNet.Structures.Messages;
 using DNet.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -29,18 +32,13 @@ namespace DNet.API
             this.SetupInternalHandlers();
         }
 
+        // TODO: Internal events should be inside switch in "WS_OnMessage.Dispatch"
         private void SetupInternalHandlers()
         {
             this.OnReady += (object sender, ReadyEvent ready) =>
             {
                 this.client.User = ready.User;
                 this.client.SetSessionId(ready.SessionId);
-            };
-
-            this.OnGuildCreate += (object sender, Guild guild) =>
-            {
-                // Update local guild cache
-                this.client.guilds.Add(guild.Id, guild);
             };
 
             this.OnGuildUpdate += (object sender, Guild guild) =>
@@ -108,6 +106,7 @@ namespace DNet.API
             Console.WriteLine($"GOT url => {convertedResponse}");
         }
 
+        // TODO: Breaks on PRESENCES_UPDATE (because gateway message data is an array instead of object)
         private void WS_OnMessage(string messageString)
         {
             GatewayMessage<JObject> message = JsonConvert.DeserializeObject<GatewayMessage<JObject>>(messageString);
@@ -165,8 +164,20 @@ namespace DNet.API
                             // Message Events
                             case "MESSAGE_CREATE":
                                 {
+                                    GenericMessage msg = this.ConvertInjectableMessage<GenericMessage>(message);
+                                    
+                                    // TODO: Throwing (cannot cast?)
+                                    if (msg.Channel.Type == ChannelType.DM)
+                                    {
+                                        DmMessage dm = (DmMessage)msg;
+                                    }
+                                    else
+                                    {
+                                        Structures.Message m = (Structures.Message)msg;
+                                    }                                    
+
                                     // Fire event
-                                    this.OnMessageCreate?.Invoke(this, this.ConvertInjectableMessage<Structures.Message>(message));
+                                    this.OnMessageCreate?.Invoke(this, msg);
 
                                     break;
                                 }
@@ -221,11 +232,42 @@ namespace DNet.API
                                     break;
                                 }
 
+                            // Channel Events
+                            case "CHANNEL_CREATE":
+                                {
+                                    Channel channel = this.ConvertInjectableMessage<Channel>(message);
+
+                                    // TODO: Must re-parse as it's fitting channel type (using JObject.ToObject<>())
+                                    if (channel.Type == ChannelType.DM || channel.Type == ChannelType.Group)
+                                    {
+                                        if (!this.client.channels.ContainsKey(channel.Id))
+                                        {
+                                            this.client.channels.Add(channel.Id, channel);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new NotImplementedException("Unable to handle unknown channel type");
+                                    }
+
+                                    // Fire event
+                                    this.OnChannelCreate?.Invoke(this, channel);
+
+                                    break;
+                                }
+
                             // Guild Events
                             case "GUILD_CREATE":
                                 {
                                     // Fire event
-                                    this.OnGuildCreate?.Invoke(this, this.ConvertInjectableMessage<Guild>(message));
+                                    Guild guild = this.ConvertInjectableMessage<Guild>(message);
+
+                                    this.PopulateChannels(ref guild);
+
+                                    // Update local guild + channel cache
+                                    this.client.guilds.Add(guild.Id, guild);
+
+                                    this.OnGuildCreate?.Invoke(this, guild);
 
                                     break;
                                 }
@@ -301,6 +343,56 @@ namespace DNet.API
             }
         }
 
+        private void PopulateChannels(ref Guild guild)
+        {
+            for (int i = 0; i < guild.UnresolvedChannels.Length; i++)
+            {
+                JObject obj = guild.UnresolvedChannels[i];
+                GuildChannel channel = obj.ToObject<GuildChannel>();
+                GuildChannel result = null;
+
+                switch (channel.Type)
+                {
+                    case ChannelType.Text:
+                        {
+                            result = obj.ToObject<TextChannel>();
+
+                            break;
+                        }
+
+                    case ChannelType.Voice:
+                        {
+                            result = obj.ToObject<VoiceChannel>();
+
+                            break;
+                        }
+
+                    case ChannelType.Category:
+                        {
+                            result = obj.ToObject<CategoryChannel>();
+
+                            break;
+                        }
+
+                    default:
+                        {
+                            throw new InvalidOperationException("Expecting valid channel type");
+                        }
+                }
+
+                result = this.client.CreateStructure(this.InjectGuildId(result, guild));
+
+                // Bind boxed channels
+                guild.Channels = new Dictionary<string, GuildChannel>
+                {
+                    { result.Id, result }
+                };
+
+                // Also save to client
+                this.client.channels.Add(result.Id, result);
+            }
+        }
+
         private T ConvertInjectableMessage<T>(GatewayMessage<JObject> message) where T : ClientInjectable, new()
         {
             return this.client.CreateStructure<T>(this.ConvertMessage<T>(message));
@@ -309,6 +401,18 @@ namespace DNet.API
         private T ConvertMessage<T>(GatewayMessage<JObject> message) where T : new()
         {
             return message.Data.ToObject<T>();
+        }
+
+        private GuildChannel InjectGuildId(GuildChannel channel, string guildId)
+        {
+            channel.GuildId = guildId;
+
+            return channel;
+        }
+
+        private GuildChannel InjectGuildId(GuildChannel channel, Guild guild)
+        {
+            return this.InjectGuildId(channel, guild.Id);
         }
 
         private void WS_OnClosed(WebSocketCloseStatus reason)
